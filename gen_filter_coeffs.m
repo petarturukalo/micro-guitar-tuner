@@ -1,6 +1,7 @@
-% Generate the coefficients for a brick wall band-pass filter for use 
-% by the CMSIS DSP arm_fir_init_*() functions. A plot of the filter is 
-% opened in a new window and the coefficients printed to standard out.
+% Generate coefficients for a brick wall band-pass filter for use by the 
+% CMSIS DSP arm_fir_init_*() functions. A plot of the filter is opened in 
+% a new window and the coefficients printed to standard out as single precision
+% 32-bit floats.
 % TODO see src where arm_fir_init_*() is called after it's written
 pkg load signal
 
@@ -12,18 +13,20 @@ lowpass_cutoff_freq = 1700;
 % The higher the order the steeper the cutoff slope (and the closer it is
 % to a brick wall filter), but also the more coefficients and memory required 
 % to store them and time spent to process them. 
-order = 2000;
+order = 1999;
 
 coeffs = fir1(order, [highpass_cutoff_freq/(oversampling_rate/2), 
                       lowpass_cutoff_freq/(oversampling_rate/2)], "bandpass");
+% Convert to 32-bit float.
+coeffs = single(coeffs);
 % Plot filter.
 freqz(coeffs, 1, 512, oversampling_rate)
 drawnow()
 % Reverse coefficients because arm_fir_init_*() requires them in time reversed order. 
 coeffs = fliplr(coeffs);
-% Print coefficients.
-printf("%f, ", coeffs(1:end-1))
-printf("%f\n", coeffs(end))
+% Print coefficients. 
+% The 9 is FLT_DECIMAL_DIG from float.h. See its documentation for more info.
+printf("%.9g, %.9g, %.9g, %.9g, %.9g,\n", coeffs)
 % Wait for plot to be closed before exiting.
 uiwait()
 
