@@ -7,5 +7,5 @@ TODO
 - bring in some explanations from note-limits.txt of the set of
 data being tested on?
 - explain why the sample rates / bit width are why they are (bit width
-becuase of the ADC 12-bit of the Pico?)
-
+because of the ADC 12-bit of the Pico?)
+- test each file on all used frame sizes
