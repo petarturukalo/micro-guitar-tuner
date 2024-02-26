@@ -2,7 +2,6 @@
 % CMSIS DSP arm_fir_init_*() functions. A plot of the filter is opened in 
 % a new window and the coefficients printed to standard out as single precision
 % 32-bit floats.
-% TODO see src where arm_fir_init_*() is called after it's written
 pkg load signal
 
 oversampling_rate = 4096;
@@ -31,12 +30,6 @@ printf("%.9g, %.9g, %.9g, %.9g, %.9g,\n", coeffs)
 uiwait()
 
 % TODO
-% - when/if variables like oversampling_rate, etc., get redefined elsewhere 
-%	(.C files), try to put them all in one place?
+% - share variables like oversampling_rate with their .c definitions?
 % -- same goes for repeated documentation?
-% - explain somewhere the lowpass_cutoff_freq is also Nyquist frequency, aliasing, original
-%	sampling rate is 2 times it, and oversampling rate is even a bit more for 
-%	FFT frequency resolution reasons and to reduce quantization noise.
-% - move this file elsewhere later on?
 % - ref somewhere else for note limits?
-% - print coefficients in the format for the data type used with the arm_fir_* functions: f32 / q notation?
