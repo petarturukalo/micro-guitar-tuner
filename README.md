@@ -16,6 +16,9 @@ is the way it is (because wanted Pico)
 - can list theory books if needed for reader's further knowledge. 
 -- ref music and computers to learn more about the theory behind it
 -- ref digital audio with java book as supplementary info for whatever i used
+-- ref HPS stuff (which? Noll because it has the formula, any others that helped
+in understanding Noll? "efficient pitch detection for interactive music" for outlining
+the variables used in Noll's HPS equation better?)
 from it: digital filters, fft, high-level guitar tuner example (just to confirm
 understanding/assumptions)
 - basically give all the info needed for the reader to build their own pico guitar

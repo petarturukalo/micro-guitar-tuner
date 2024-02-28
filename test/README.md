@@ -13,5 +13,6 @@ other test info, how to build and run either
 	open the svg file in a browser and then left click the mouse to bring up the coordinate 
 	that the cursor is currently over. (TODO and then show image of it as an example)
 -- explain the contents of the notes and what you're expected to see. peaks at integer multiples of
-	the fundamental frequency (Fourier analysis)
+	the fundamental frequency (Fourier analysis), and that the HPS version then turns the fundamental
+	frequency into the max peak (show before and after example of one where fundamental isn't max in before)
 

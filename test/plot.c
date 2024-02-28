@@ -11,9 +11,8 @@
  * Metadata keyentries are also drawn to the key/legend here because it can only
  * be done with the plot command.
  */
-static void plot_magnitudes(FILE *gnuplot, const int16_t *samples, enum frame_length frame_len)
+static void plot_magnitudes(FILE *gnuplot, float32_t *freq_bin_magnitudes, enum frame_length frame_len)
 {
-	float32_t *freq_bin_magnitudes = guitar_tuner_dsp(samples, frame_len);
 	const int nbins = nr_bins(frame_len);
 	const int binwidth = bin_width(frame_len);
 	float bin_centre_xpos = binwidth/2;
@@ -35,11 +34,10 @@ static void plot_magnitudes(FILE *gnuplot, const int16_t *samples, enum frame_le
 }
 
 /*
- * Save a plot of the output of the note samples after processing with guitar_tuner_dsp() 
- * to file 'plot/<note_name>-<i>.svg'.
+ * Save a plot of the frequency bin magnitudes of a note to file 'plot/<note_name><name_suffix>-<i>.svg'.
  */
-static bool plot_note_freq_bin_magnitudes(const char *note_name, int i, 
-					  const int16_t *samples, enum frame_length frame_len) 
+static bool _plot_note_freq_bin_magnitudes(const char *note_name, char *name_suffix, int i, 
+					   float32_t *freq_bin_magnitudes, enum frame_length frame_len) 
 {
 	FILE *gnuplot;
 	const char *image_file_format = "svg";
@@ -51,27 +49,48 @@ static bool plot_note_freq_bin_magnitudes(const char *note_name, int i,
 		return false;
 	}
 	fprintf(gnuplot, "set term %s size 1024,768 dynamic mouse\n", image_file_format); 
-	snprintf(plot_pathname, sizeof(plot_pathname), "plot/%s-%d.%s", note_name, i, image_file_format);
+	snprintf(plot_pathname, sizeof(plot_pathname), "plot/%s%s-%d.%s", note_name, name_suffix, i, image_file_format);
 	fprintf(gnuplot, "set output '%s'\n", plot_pathname);
 
 	fprintf(gnuplot, "set title '%s'\n", note_name);
 	fprintf(gnuplot, "set xlabel 'Frequency (Hz)'\n");
-	fprintf(gnuplot, "set ylabel 'Magnitude'\n"); /* TODO squared? or energy? */
+	fprintf(gnuplot, "set ylabel 'Magnitude'\n"); 
 	fprintf(gnuplot, "set xtics out nomirror %d\n", XTICS_INCR);
 	fprintf(gnuplot, "set ytics out nomirror\n");
 	fprintf(gnuplot, "set style fill solid\n");
 
-	plot_magnitudes(gnuplot, samples, frame_len);
+	plot_magnitudes(gnuplot, freq_bin_magnitudes, frame_len);
 
 	pclose(gnuplot);
 	printf("Wrote plot to %s\n", plot_pathname);
 	return true;
 }
 
+static bool plot_note_freq_bin_magnitudes(const char *note_name, int i, 
+					  const int16_t *samples, enum frame_length frame_len) 
+{
+	float32_t *freq_bin_magnitudes = samples_to_freq_bin_magnitudes(samples, frame_len);
+	return _plot_note_freq_bin_magnitudes(note_name, "", i, freq_bin_magnitudes, frame_len);
+}
+
+static bool plot_note_freq_bin_magnitudes_hps(const char *note_name, int i, 
+					      const int16_t *samples, enum frame_length frame_len) 
+{
+	float32_t *freq_bin_magnitudes = samples_to_freq_bin_magnitudes(samples, frame_len);
+	harmonic_product_spectrum(freq_bin_magnitudes, frame_len);
+	return _plot_note_freq_bin_magnitudes(note_name, "-hps", i, freq_bin_magnitudes, frame_len);
+}
+
+/*
+ * TODO
+ * - test with different frame lengths
+ * - add cmdline opt for frame length? 
+ * - even add cmdline opts for whether to produce mag plots, hps plots, all i frames 
+ *	or just i==1 frame (to save space)
+ */
 int main(void)
 {
-	/* TODO test with different frame lengths */
-	/* TODO add cmdline opt for frame length? */
-	return !for_each_note_file_source(FRAME_LEN_4096, plot_note_freq_bin_magnitudes);
+	return !for_each_note_file_source(FRAME_LEN_4096, plot_note_freq_bin_magnitudes) ||
+	       !for_each_note_file_source(FRAME_LEN_4096, plot_note_freq_bin_magnitudes_hps);
 }
 

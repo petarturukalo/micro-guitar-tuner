@@ -23,7 +23,7 @@ objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
 	../CMSIS-DSP/Source/CommonTables/arm_const_structs.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_cfft_radix8_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_bitreversal2.o \
-	../CMSIS-DSP/Source/ComplexMathFunctions/arm_cmplx_mag_squared_f32.o
+	../CMSIS-DSP/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
 
 
 libcore.a: $(objs)

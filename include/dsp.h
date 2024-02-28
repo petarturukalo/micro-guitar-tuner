@@ -63,10 +63,17 @@ enum frame_length {
  *   is getting verbose)
  * - handle errors and return NULL on error?
  */
-float32_t *guitar_tuner_dsp(const int16_t *samples, enum frame_length frame_len);
+float32_t *samples_to_freq_bin_magnitudes(const int16_t *samples, enum frame_length frame_len);
 
 int nr_bins(enum frame_length frame_len);
 int bandwidth(void);
 int bin_width(enum frame_length frame_len);
+
+/*
+ * Apply a Harmonic Product Spectrum (HPS) to the magnitudes to turn the fundamental
+ * frequency peak into the maximum peak. This is done because the maximum peak isn't 
+ * necessarily the fundamental, and may be a different harmonic.
+ */
+void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length frame_len);
 
 #endif
