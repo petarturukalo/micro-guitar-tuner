@@ -1,4 +1,5 @@
 #include "note.h"
+#include <dsp/fast_math_functions.h>
 
 struct note_freq note_freqs[] = {
 	{ "C0",  16.351 },
@@ -118,4 +119,21 @@ struct note_freq note_freqs[] = {
 float32_t lowest_note_frequency(void)
 {
 	return note_freqs[0].frequency;
+}
+
+/* TODO if don't end up using q notation just use math.h logs */
+static float32_t Log2(float32_t x)
+{
+	const float32_t base = 2;
+	float32_t log_of_x, log_of_2;
+
+	arm_vlog_f32(&x, &log_of_x, 1);
+	arm_vlog_f32(&base, &log_of_2, 1);
+
+	return log_of_x/log_of_2;
+}
+
+float32_t cents_difference(float32_t ref_note_frequency, float32_t frequency)
+{
+	return -CENTS_IN_OCTAVE*Log2(ref_note_frequency/frequency);
 }

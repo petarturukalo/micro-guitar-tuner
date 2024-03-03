@@ -15,7 +15,8 @@ is the way it is (because wanted Pico)
 -- TODO also list exact versions of software?
 - can list theory books if needed for reader's further knowledge. 
 -- ref music and computers to learn more about the theory behind it
--- ref digital audio with java book as supplementary info for whatever i used
+-- ref digital audio with java book as supplementary info for whatever i used it for
+(digital filters, FFT, cents)
 -- ref HPS stuff (which? Noll because it has the formula, any others that helped
 in understanding Noll? "efficient pitch detection for interactive music" for outlining
 the variables used in Noll's HPS equation better?)

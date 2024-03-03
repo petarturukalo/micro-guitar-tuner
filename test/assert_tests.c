@@ -103,9 +103,45 @@ static bool assert_hps(const char *note_name, int i, const int16_t *samples, enu
 	return true;
 }
 
+static bool semitone_cents_diff_within_tolerance(float32_t cents_diff)
+{
+	const float32_t tolerance = 0.1;
+	/* TODO abs won't work with q notation? */
+	return fabs(fabs(cents_diff) - CENTS_IN_SEMITONE) <= tolerance;
+}
+
+/* 
+ * Assert each pair of adjacent notes in note_freqs is about CENTS_IN_SEMITONE 
+ * (within some tolerance) apart from each other. 
+ */
+static void test_cents_difference(void)
+{
+	struct note_freq *prev, *cur, *next;
+
+	prev = NULL;
+	cur = note_freqs;
+	while (cur->note_name) {
+		if (prev) {
+			float32_t cents_diff = cents_difference(prev->frequency, cur->frequency);
+			Assert(cents_diff > 0, "prev %s, cur %s, cents diff %.3f", prev->note_name, cur->note_name, cents_diff);
+			Assert(semitone_cents_diff_within_tolerance(cents_diff), "prev %s, cur %s, cents diff %.3f", 
+										 prev->note_name, cur->note_name, cents_diff);
+		}
+		next = cur+1;
+		if (next->note_name) {
+			float32_t cents_diff = cents_difference(next->frequency, cur->frequency);
+			Assert(cents_diff < 0, "next %s, cur %s, cents diff %.3f", next->note_name, cur->note_name, cents_diff);
+			Assert(semitone_cents_diff_within_tolerance(cents_diff), "next %s, cur %s, cents diff %.3f", 
+										 next->note_name, cur->note_name, cents_diff);
+		}
+		prev = cur++;
+	}
+}
+
 /* TODO explain (running assert tests) */
 int main(void)
 {
+	/* TODO fix up whitespace */
 	for_each_sine_file_source(FRAME_LEN_2048, assert_sine_wave_freq_to_bin_index);
 	for_each_sine_file_source(FRAME_LEN_4096, assert_sine_wave_freq_to_bin_index);
 
@@ -113,6 +149,8 @@ int main(void)
 
 	/* TODO test other frame lens :( */
 	for_each_note_file_source(FRAME_LEN_4096, assert_hps);
+
+	test_cents_difference();
 
 	return !print_asserts_summary();
 }

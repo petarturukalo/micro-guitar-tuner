@@ -24,7 +24,8 @@ objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_cfft_radix8_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_bitreversal2.o \
 	../CMSIS-DSP/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o \
-	../CMSIS-DSP/Source/StatisticsFunctions/arm_max_f32.o
+	../CMSIS-DSP/Source/StatisticsFunctions/arm_max_f32.o \
+	../CMSIS-DSP/Source/FastMathFunctions/arm_vlog_f32.o
 
 
 libcore.a: $(objs)
