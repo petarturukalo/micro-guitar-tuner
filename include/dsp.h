@@ -13,6 +13,8 @@
  * (hence oversampling), to 1. reduce quantization noise / improve SNR, and 2. 
  * to meet a reasonable frequency/time resolution tradeoff when paired with
  * the MAX_FRAME_LEN.
+ * 
+ * See also comments at 'note.c:note_freqs'.
  * TODO reword ending and ref frequency/time resolution stuff when implemented elsewhere
  */
 #define OVERSAMPLING_RATE 4096

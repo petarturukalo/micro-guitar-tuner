@@ -8,6 +8,7 @@ oversampling_rate = 4096;
 % So it begins to slope at ~16 Hz, just a bit below the lowest note C0.
 highpass_cutoff_freq = 13;
 % So it begins to slope just above the highest supported note, G#6.
+% See also comments at 'note.c:note_freqs'.
 lowpass_cutoff_freq = 1700;
 % The higher the order the steeper the cutoff slope (and the closer it is
 % to a brick wall filter), but also the more coefficients and memory required 

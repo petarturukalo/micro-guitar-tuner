@@ -5,8 +5,8 @@
 
 /*
  * Assert whether the condition is true. If false print the error message
- * to stderr describing TODO what the expected/actual was?, and increment
- * the count of failed assertions. TODO format is optional
+ * to stderr, and increment the count of failed assertions. Pass NULL to
+ * format to not print an error message on error.
  */
 void Assert(bool condition, const char *function, const char *file, int line,
 	    const char *format, ...);

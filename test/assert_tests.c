@@ -71,6 +71,19 @@ static void test_hps_find_harmonic_peaks(void)
 	assert_hps_find_harmonic_peaks(83, 1);
 }
 
+/* TODO rename inline to whatever else gets added to note.h */
+static float32_t note_frequency(const char *note_name)
+{
+	struct note_freq *nf = note_freqs;
+	
+	for (; nf->note_name; ++nf) {
+		if (strcasecmp(note_name, nf->note_name) == 0) {
+			return nf->frequency;
+		}
+	}
+	return 0;
+}
+
 /* Assert harmonic product spectrum turns the fundamental frequency into the maximum peak. */
 static bool assert_hps(const char *note_name, int i, const int16_t *samples, enum frame_length frame_len)
 {
@@ -98,7 +111,6 @@ int main(void)
 
 	test_hps_find_harmonic_peaks();
 
-	/* TODO call test_hps_find_harmonic_peaks */
 	/* TODO test other frame lens :( */
 	for_each_note_file_source(FRAME_LEN_4096, assert_hps);
 

@@ -3,6 +3,7 @@
 #include <dsp/complex_math_functions.h>
 #include <dsp/statistics_functions.h>
 #include "dsp.h"
+#include "note.h"
 #include "filter_coeffs.c"
 #include <stdbool.h>
 
@@ -129,11 +130,8 @@ void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length
 	const int nbins = nr_bins(frame_len);
 	int i;  /* Bin index. */
 
-	/*
-	 * Skip the frequencies below the lowest note.
-	 * TODO replace 16 with define later on and then reword this comment
-	 */
-	i = freq_to_bin_index(16, bin_width(frame_len));
+	/* Skip the frequencies below the lowest note. */
+	i = freq_to_bin_index((int)lowest_note_frequency(), bin_width(frame_len));
 	for (bool finished = false; !finished; ++i) {
 		/* Start at 2 because the current bin is the 1st harmonic. */
 		for (int harmonic = 2; harmonic <= NHARMONICS; ++harmonic) {
