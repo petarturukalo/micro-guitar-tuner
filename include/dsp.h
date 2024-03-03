@@ -34,6 +34,8 @@ enum frame_length {
  * lengths will fit in it. 
  */
 #define MAX_FRAME_LEN  FRAME_LEN_4096
+#define MAX_NR_BINS (MAX_FRAME_LEN/2)
+
 
 /*
  * Transform a frame of audio samples in the time domain to and return the 
@@ -43,11 +45,9 @@ enum frame_length {
  *
  * The frequency bandwidth (frequencies from 0 to half the OVERSAMPLNG_RATE)
  * are split across nr_bins() frequency bins (hence the returned array is also
- * of length nr_bins()). Each bin spans bin_width() Hz: the bin at index i 
- * stores the magnitude for the range of frequencies between (i-1)*bin_width Hz 
- * and i*bin_width Hz. Bins start at index 1 because index 0 is for the DC offset 
- * and can be ignored.
- * TODO confirm?
+ * of length nr_bins()). The frequency range of bin at index i spans bin_width() Hz
+ * and is centred about frequency i*bin_width() (see also bin_index_to_freq()). 
+ * Bins start at index 1 because index 0 is for the DC offset and can be ignored.
  *
  * Note a band-pass filter is also applied, its low-pass (anti-aliasing) filter part 
  * done specifically to cut off frequencies above the Nyquist frequency and prevent
@@ -57,7 +57,6 @@ enum frame_length {
  * - as write up more source and things get documented elsewhere, add more here or
  *   move documentation it away wherever it's best suited. and use refs to defines
  *   where possible (as they too get added)
- * - rename?
  * - explain why takes s16 integers?
  * - explain resolution tradeoffs here or elsewhere? (probably elsewhere because this
  *   is getting verbose)
@@ -68,6 +67,13 @@ float32_t *samples_to_freq_bin_magnitudes(const int16_t *samples, enum frame_len
 int nr_bins(enum frame_length frame_len);
 int bandwidth(void);
 int bin_width(enum frame_length frame_len);
+enum frame_length frame_length_from_bin_width(int binwidth);  /* Return 0 on error. */
+/* Get the index of the bin which the frequency falls into. */
+int freq_to_bin_index(float32_t frequency, int binwidth);
+float32_t bin_index_to_freq(int bin_index, int binwidth);
+
+/* Number of harmonics can't be too high otherwise the new product value will overflow. */
+#define NHARMONICS 4
 
 /*
  * Apply a Harmonic Product Spectrum (HPS) to the magnitudes to turn the fundamental
@@ -75,5 +81,7 @@ int bin_width(enum frame_length frame_len);
  * necessarily the fundamental, and may be a different harmonic.
  */
 void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length frame_len);
+/* Get the index of the frequency bin with the maximum magnitude peak. */
+int max_bin_index(float32_t *freq_bin_magnitudes, enum frame_length frame_len);
 
 #endif

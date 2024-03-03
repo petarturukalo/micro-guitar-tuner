@@ -10,7 +10,7 @@ CFLAGS += -DARM_FFT_ALLOW_TABLES \
 	  -DARM_ALL_FFT_TABLES
 
 # Objects local to the core lib.
-objs = dsp.o
+objs = dsp.o note.o
 # Dependent CMSIS DSP objects.
 # TODO better way to do this? maybe CMSIS DSP provides a cmake interface?
 objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
@@ -23,7 +23,8 @@ objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
 	../CMSIS-DSP/Source/CommonTables/arm_const_structs.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_cfft_radix8_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_bitreversal2.o \
-	../CMSIS-DSP/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o
+	../CMSIS-DSP/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o \
+	../CMSIS-DSP/Source/StatisticsFunctions/arm_max_f32.o
 
 
 libcore.a: $(objs)

@@ -9,18 +9,8 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
+#include <libgen.h>
 #include "file_source.h"
-
-/*
- * TODO if need general audio file source functionality (not just from note) 
- * in future then refactor:
- * - rename note_file_source to something like audio_file_source
- * - don't pass note name to process_samples_fn
- * - rename note-recordings dir to general like audio-recordings and then maybe
- *   a sub dir for notes audio-recordings/notes. split up its READMEs appropriately,
- *   e.g. dir has README for all 
- * ...
- */
 
 /* TODO don't reinvent the wheel for tests. use c++? */
 static bool str_has_suffix(const char *str, const char *suffix)
@@ -49,18 +39,18 @@ static int file_size(int fd)
 }
 
 /*
- * Run a function on a stream of samples sourced from a note file. 
- * See note-recordings/README.md for an explanation of the format of a note file.
+ * Run a function on a stream of samples sourced from a file. 
+ * See data/note/README.md for an explanation of the format of a file source.
  * The samples in the file are split into frames of size frame_len samples, 
  * and process_samples called once on each frame until there aren't enough 
  * samples left in the file to fill a whole frame.
  */
-static bool note_file_source(const char *pathname, enum frame_length frame_len,
-			     process_samples_fn process_samples)
+static bool file_source(const char *pathname, enum frame_length frame_len,
+			process_samples_fn process_samples)
 {
 	int fd, fsz, sample_size = sizeof(int16_t);
 	int16_t *samples;
-	char note_name[16];
+	char *filename;
 	int remaining_samples;
 	bool ret = true;
 
@@ -81,15 +71,17 @@ static bool note_file_source(const char *pathname, enum frame_length frame_len,
 		close(fd);
 		return false;
 	}
-	/* Extract note name from pathname, e.g. "E2" from "data/E2.raw" */
-	sscanf(pathname, "%*[^/]/%[^.]", note_name);
+	/* Extract name from pathname, excluding .raw extension, e.g. "E2" from "data/E2.raw" */
+	filename = basename((char *)pathname);
+	*(strrchr(filename, '.')) = '\0';  /* Chop off .raw extension. */
+
 	remaining_samples = fsz/sample_size;
 
 	for (int i = 1; remaining_samples >= frame_len; ++i) {
 		/* Read frame of samples. */
 		int bytes_read = read(fd, samples, frame_len*sample_size);
 		if (bytes_read == -1) {
-			fprintf(stderr, "Error reading from file %s: %s\n", pathname, strerror(errno));
+			fprintf(stderr, "Error reading from file source %s: %s\n", filename, strerror(errno));
 			ret = false;
 			break;
 		}
@@ -99,7 +91,7 @@ static bool note_file_source(const char *pathname, enum frame_length frame_len,
 			break;
 		}
 
-		if (!process_samples(note_name, i, samples, frame_len)) {
+		if (!process_samples(filename, i, samples, frame_len)) {
 			ret = false;
 			break;
 		}
@@ -110,32 +102,43 @@ static bool note_file_source(const char *pathname, enum frame_length frame_len,
 	return ret;
 }
 
-bool for_each_note_file_source(enum frame_length frame_len, process_samples_fn process_samples)
+static bool for_each_file_source(const char *file_source_dir, enum frame_length frame_len, 
+				 process_samples_fn process_samples)
 {
 	DIR *dir;
 	struct dirent *dirent;
 	bool ret = true;
 	char pathname[64];
 	
-	dir = opendir(NOTE_FILES_DIR);
+	dir = opendir(file_source_dir);
 	if (!dir) {
-		fprintf(stderr, "Error opening directory %s: %s\n", NOTE_FILES_DIR, strerror(errno));
+		fprintf(stderr, "Error opening directory %s: %s\n", file_source_dir, strerror(errno));
 		return false;
 	}
 	errno = 0;
 	while (dirent = readdir(dir)) {
 		if (!str_has_suffix(dirent->d_name, ".raw"))
 			continue;
-		snprintf(pathname, sizeof(pathname), "%s/%s", NOTE_FILES_DIR, dirent->d_name);
-		if (!note_file_source(pathname, frame_len, process_samples))
+		snprintf(pathname, sizeof(pathname), "%s/%s", file_source_dir, dirent->d_name);
+		if (!file_source(pathname, frame_len, process_samples))
 			break;
 		errno = 0;
 	}
 	if (errno) {
-		fprintf(stderr, "Error reading from directory %s: %s\n", NOTE_FILES_DIR, strerror(errno));
+		fprintf(stderr, "Error reading from directory %s: %s\n", file_source_dir, strerror(errno));
 		ret = false;
 	}
 	closedir(dir);
 	return ret;
+}
+
+bool for_each_note_file_source(enum frame_length frame_len, process_samples_fn process_samples)
+{
+	return for_each_file_source(NOTE_FILES_DIR, frame_len, process_samples);
+}
+
+bool for_each_sine_file_source(enum frame_length frame_len, process_samples_fn process_samples)
+{
+	return for_each_file_source(SINE_FILES_DIR, frame_len, process_samples);
 }
 

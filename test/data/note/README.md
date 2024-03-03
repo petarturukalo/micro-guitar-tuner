@@ -9,3 +9,4 @@ data being tested on?
 - explain why the sample rates / bit width are why they are (bit width
 because of the ADC 12-bit of the Pico?)
 - test each file on all used frame sizes
+- mention all open strings now ...
