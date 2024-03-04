@@ -18,6 +18,7 @@ float32_t lowest_note_frequency(void);
 
 #define CENTS_IN_OCTAVE  1200
 #define CENTS_IN_SEMITONE 100
+#define CENTS_IN_HALF_SEMITONE (CENTS_IN_SEMITONE/2)
 
 /*
  * Get in cents how close a frequency is to a reference note frequency.
@@ -31,6 +32,13 @@ float32_t lowest_note_frequency(void);
  * TODO reference this function was taken from the digital audio with java book
  * TODO should be returning int because cents is int, but that would ruin the tests?
  */
-float32_t cents_difference(float32_t ref_note_frequency, float32_t frequency);
+float32_t cents_difference(float32_t frequency, struct note_freq *reference);
+
+/* 
+ * Get the note closest to the input frequency. The returned note will be at most 
+ * CENTS_IN_HALF_SEMITONE cents away from the frequency. Return NULL if the frequency 
+ * is not in the covered frequency range.
+ */
+struct note_freq *nearest_note(float32_t frequency);
 
 #endif

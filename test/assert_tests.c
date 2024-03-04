@@ -122,14 +122,14 @@ static void test_cents_difference(void)
 	cur = note_freqs;
 	while (cur->note_name) {
 		if (prev) {
-			float32_t cents_diff = cents_difference(prev->frequency, cur->frequency);
+			float32_t cents_diff = cents_difference(cur->frequency, prev);
 			Assert(cents_diff > 0, "prev %s, cur %s, cents diff %.3f", prev->note_name, cur->note_name, cents_diff);
 			Assert(semitone_cents_diff_within_tolerance(cents_diff), "prev %s, cur %s, cents diff %.3f", 
 										 prev->note_name, cur->note_name, cents_diff);
 		}
 		next = cur+1;
 		if (next->note_name) {
-			float32_t cents_diff = cents_difference(next->frequency, cur->frequency);
+			float32_t cents_diff = cents_difference(cur->frequency, next);
 			Assert(cents_diff < 0, "next %s, cur %s, cents diff %.3f", next->note_name, cur->note_name, cents_diff);
 			Assert(semitone_cents_diff_within_tolerance(cents_diff), "next %s, cur %s, cents diff %.3f", 
 										 next->note_name, cur->note_name, cents_diff);

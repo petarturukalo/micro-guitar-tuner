@@ -133,7 +133,28 @@ static float32_t Log2(float32_t x)
 	return log_of_x/log_of_2;
 }
 
-float32_t cents_difference(float32_t ref_note_frequency, float32_t frequency)
+float32_t cents_difference(float32_t frequency, struct note_freq *reference)
 {
-	return -CENTS_IN_OCTAVE*Log2(ref_note_frequency/frequency);
+	return -CENTS_IN_OCTAVE*Log2(reference->frequency/frequency);
+}
+
+struct note_freq *nearest_note(float32_t frequency)
+{
+	struct note_freq *nf;
+
+	nf = note_freqs;
+	/* Not allowing frequencies lower than the lowest note. */
+	if (frequency < nf->frequency)
+		return NULL;
+	++nf;
+	for (; nf->note_name; ++nf) {
+		if (frequency < nf->frequency) {
+			/* Return the closer note. */
+			if (cents_difference(frequency, nf) >= -CENTS_IN_HALF_SEMITONE)
+				return nf;
+			return nf-1;
+		}
+	}
+	/* Not allowing frequencies higher than the highest note. */
+	return NULL;
 }
