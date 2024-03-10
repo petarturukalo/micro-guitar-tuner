@@ -4,3 +4,6 @@
 [submodule "CMSIS_6"]
 	path = CMSIS_6
 	url = https://github.com/ARM-software/CMSIS_6
+[submodule "mcu/pico-sdk"]
+	path = mcu/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk
