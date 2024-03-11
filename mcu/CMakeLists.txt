@@ -45,3 +45,9 @@ target_include_directories(libcore INTERFACE
 			   ${CMAKE_SOURCE_DIR}/../CMSIS_6/CMSIS/Core/Include)
 set_target_properties(libcore PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../core/libcore.a)
 add_dependencies(libcore build_libcore)
+
+# TODO note 'make clean' in build/ dir won't clean libcore. can't add a clean_libcore and make it
+# a dependecy on the clean target, so either note this shortcoming in README/documentation somewhere
+# on how to clean it manually with 'make -f libcore.mk clean', or make clean_libcore a dependecy 
+# of build_libcore so it gets cleaned every time before build, or invoke -B option to make to 
+# always make all libcore targets
