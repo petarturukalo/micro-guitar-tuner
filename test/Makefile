@@ -1,3 +1,5 @@
+# TODO don't need to bother with targeting a CPU for tests since can't simulate Cortex-M?
+# maybe comment that can't simulate it so that's why using Cortex-A
 export cross_prefix = arm-linux-gnueabihf-
 arm_arch_profile = "'A'"
 include ../core/compiler_vars.mk

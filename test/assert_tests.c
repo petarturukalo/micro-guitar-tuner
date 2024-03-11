@@ -1,9 +1,12 @@
 #include "dsp.h"
+#include "adc.h"
 #include "note.h"
 #include "assert.h"
 #include "file_source.h"
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 /* Assert the frequency of a sine wave falls into the expected bin. */
@@ -138,6 +141,26 @@ static void test_cents_difference(void)
 	}
 }
 
+static void assert_convert_adc_u12_sample_to_s16(uint16_t u12_sample, float32_t expected_s16_sample)
+{
+	float32_t actual_s16_sample = convert_adc_u12_sample_to_s16(u12_sample);
+	char *expected_str, *actual_str;
+
+	/* Convert to 2 decimal places to accept some tolerance. */
+	asprintf(&expected_str, "%.2f", expected_s16_sample);
+	asprintf(&actual_str, "%.2f", actual_s16_sample);
+	Assert(strcmp(expected_str, actual_str) == 0, "convert sample %u expected %s but was %s", 
+						      u12_sample, expected_str, actual_str);
+	free(expected_str);
+	free(actual_str);
+}
+
+static void test_convert_adc_u12_sample_to_s16(void)
+{
+	assert_convert_adc_u12_sample_to_s16(0, INT16_MIN);
+	assert_convert_adc_u12_sample_to_s16(4095, INT16_MAX);
+}
+
 /* TODO explain (running assert tests) */
 int main(void)
 {
@@ -151,6 +174,8 @@ int main(void)
 	for_each_note_file_source(FRAME_LEN_4096, assert_hps);
 
 	test_cents_difference();
+
+	test_convert_adc_u12_sample_to_s16();
 
 	return !print_asserts_summary();
 }

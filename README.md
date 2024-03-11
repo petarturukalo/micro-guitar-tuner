@@ -24,7 +24,8 @@ from it: digital filters, fft, high-level guitar tuner example (just to confirm
 understanding/assumptions)
 - basically give all the info needed for the reader to build their own pico guitar
 tuner using my source
-- should link to pico docs at all? or reader expected to be familiar? 
+- should link to pico docs at all (pico sdk?)? or reader expected to be familiar? can ref pico sdk
+or other material to remind them how to build it, or give instructions on making it with cmake
 - mention how to run tests (emulation, graph outputs, etc.). or put in test/README.md and
 tell reader to go look there
 - mention parameters (sampling rate, etc.), implementation and limitations of FFT, 

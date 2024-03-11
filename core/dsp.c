@@ -10,6 +10,8 @@
 /* 
  * TODO change float32_t to q notation later if find can't use it on cortex-m0+ 
  * (most likely will need to use q notation) 
+ * TODO pico might actually have single precision float support available through
+ * its SDK runtime libraries, it's just that pure Cortex-M0+ doesn't
  */
 
 static void s16_array_to_f32(const int16_t *src, float32_t *dest, int len)
@@ -172,7 +174,7 @@ void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length
 int max_bin_index(float32_t *freq_bin_magnitudes, enum frame_length frame_len)
 {
 	float32_t max;
-	int max_index;
+	uint32_t max_index;
 
 	arm_max_f32(freq_bin_magnitudes, nr_bins(frame_len), &max, &max_index);
 	return max_index;

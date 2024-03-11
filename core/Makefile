@@ -10,7 +10,7 @@ CFLAGS += -DARM_FFT_ALLOW_TABLES \
 	  -DARM_ALL_FFT_TABLES
 
 # Objects local to the core lib.
-objs = dsp.o note.o
+objs = dsp.o note.o adc.o
 # Dependent CMSIS DSP objects.
 # TODO better way to do this? maybe CMSIS DSP provides a cmake interface?
 objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
@@ -37,4 +37,5 @@ clean:
 # TODO
 # - when start on mcu code and compiling for cortex-m, need to make 
 # sure cortex-m objs don't get mixed together with cortex-a objs. 
-# might need to give them different names, and the libs diff names too.
+# might need to give them different names, and the libs diff names too
+# (suffix with -a and -m before the extension??).
