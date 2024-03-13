@@ -69,14 +69,14 @@ static bool _plot_note_freq_bin_magnitudes(const char *note_name, char *name_suf
 static bool plot_note_freq_bin_magnitudes(const char *note_name, int i, 
 					  const int16_t *samples, enum frame_length frame_len) 
 {
-	float32_t *freq_bin_magnitudes = samples_to_freq_bin_magnitudes(samples, frame_len);
+	float32_t *freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
 	return _plot_note_freq_bin_magnitudes(note_name, "", i, freq_bin_magnitudes, frame_len);
 }
 
 static bool plot_note_freq_bin_magnitudes_hps(const char *note_name, int i, 
 					      const int16_t *samples, enum frame_length frame_len) 
 {
-	float32_t *freq_bin_magnitudes = samples_to_freq_bin_magnitudes(samples, frame_len);
+	float32_t *freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
 	harmonic_product_spectrum(freq_bin_magnitudes, frame_len);
 	return _plot_note_freq_bin_magnitudes(note_name, "-hps", i, freq_bin_magnitudes, frame_len);
 }

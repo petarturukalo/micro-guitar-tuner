@@ -64,7 +64,8 @@ enum frame_length {
  *   is getting verbose)
  * - handle errors and return NULL on error?
  */
-float32_t *samples_to_freq_bin_magnitudes(const int16_t *samples, enum frame_length frame_len);
+float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum frame_length frame_len);
+float32_t *samples_to_freq_bin_magnitudes_s16(const int16_t *samples, enum frame_length frame_len);
 
 int nr_bins(enum frame_length frame_len);
 int bandwidth(void);

@@ -18,7 +18,7 @@ static bool assert_sine_wave_freq_to_bin_index(const char *sine_freq_str, int i,
 	int expected_bin_index, actual_bin_index;
 
 	sscanf(sine_freq_str, "%f", &sine_freq);
-	freq_bin_magnitudes = samples_to_freq_bin_magnitudes(samples, frame_len);
+	freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
 	expected_bin_index = freq_to_bin_index(sine_freq, bin_width(frame_len));
 	actual_bin_index = max_bin_index(freq_bin_magnitudes, frame_len);
 
@@ -94,7 +94,7 @@ static bool assert_hps(const char *note_name, int i, const int16_t *samples, enu
 	float32_t note_freq;
 	int expected_bin_index, actual_bin_index;
 
-	freq_bin_magnitudes = samples_to_freq_bin_magnitudes(samples, frame_len);
+	freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
 	harmonic_product_spectrum(freq_bin_magnitudes, frame_len);
 
 	note_freq = note_frequency(note_name);
@@ -165,7 +165,9 @@ static void test_convert_adc_u12_sample_to_s16(void)
 int main(void)
 {
 	/* TODO fix up whitespace */
-	for_each_sine_file_source(FRAME_LEN_2048, assert_sine_wave_freq_to_bin_index);
+
+	/* TODO not currently linking against RFFT frame len 2048 tables */
+	/*for_each_sine_file_source(FRAME_LEN_2048, assert_sine_wave_freq_to_bin_index);*/
 	for_each_sine_file_source(FRAME_LEN_4096, assert_sine_wave_freq_to_bin_index);
 
 	test_hps_find_harmonic_peaks();

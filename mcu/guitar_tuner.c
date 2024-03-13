@@ -2,7 +2,10 @@
 #include <pico/stdio_usb.h>
 #include <pico/time.h>/* TODO rm? */
 #include <hardware/adc.h>
+#include <pico/multicore.h>
 #include "adc.h"
+#include "dsp.h"
+#include "note.h"
 
 /* Pin number of GPIO which ADC0 uses. */
 #define ADC0_GPIO_PIN 26
@@ -28,18 +31,39 @@ static void adc_set_sampling_rate(int sampling_rate)
 	adc_set_clkdiv(clkdiv);
 }
 
-/* TODO rm */
-int16_t samples[4096];
-unsigned int i = 0;
+/*
+ * TODO explain why this stores 2 frames. so processing core can process while other
+ * frame gets filled
+ */
+/* TODO define "USED" frame len to FRAME_LEN_4096? */
+/* TODO need volatile for shared? volatile before or after static? */
+static volatile float32_t samples[FRAME_LEN_4096*2];
 
-/* TODO ISR coding style? what's needed for robust ISR? certainly not printing */
+/* TODO ISR coding style? what's needed for robust ISR? volatile (or that's just for mmio)? certainly not printing */
 /* TODO worry about timing here and making sure it's stored before the next interrupt.
  * RTOS? and for locking variables shared between cores?*/
 /* TODO bother explaining? */
 static void adc_isr(void) 
 {
-	/* TODO explain also drains FIFO and clears interrupt. */
-	samples[i++] = adc_fifo_get()&ADC_FIFO_VAL_BITS;
+	static int i = 0;
+
+	/* Call to adc_fifo_get() will drain the FIFO and clear the interrupt. */
+	samples[i++] = convert_adc_u12_sample_to_s16(adc_fifo_get()&ADC_FIFO_VAL_BITS);
+
+	/* 
+	 * If just finished filling a frame of samples.
+	 *
+	 * Note variable i will never be 0 because of the i++ so 0%FRAME_LEN_4096 == 0 (true)
+	 * will never accidentally enter this block.
+	 */
+	if (i%FRAME_LEN_4096 == 0) {
+		/* TODO if use FreeRTOS SMP can't use these multicore fifo fns directly? */
+		/* Send start index of frame to processing core. */
+		/* TODO safe to use in IRQ? */
+		/*multicore_fifo_push_blocking(i-FRAME_LEN_4096);*/
+		if (i == FRAME_LEN_4096*2)
+			i = 0;
+	}
 }
 
 /*
@@ -48,11 +72,11 @@ static void adc_isr(void)
  * 
  * Samples are captured in interrupt driven free-running sampling mode,
  * which utilises hardware timing to achieve the sampling rate. 
- * This very precise timing is needed otherwise the restored signal 
- * may have spurious results.
+ * This very precise timing is needed otherwise the signal may not be
+ * restored accurately.
  *
  * WARNING do not use sampling rates less than ~750 because from testing
- * they do not work as intended and give a random sampling rate.
+ * they do not work as intended and give a spurious sampling rate.
  */
 static void sampler_init(int sampling_rate)
 {
@@ -83,38 +107,83 @@ static void sampler_init(int sampling_rate)
  */
 static void sampler_start(void)
 {
-	/* TODO rm */
-	for (int countdown = 17; countdown > 0; --countdown) {
-		printf("countdown %d\n", countdown);
-		sleep_ms(1000);
-	}
-
 	absolute_time_t tm = make_timeout_time_ms(1000);
 	adc_run(true);
 	while (get_absolute_time() < tm)
 		;
 	adc_run(false);
-
-	printf("i=%d\n", i);
-	for (int i = 0; i < 4096; ++i) {
-		printf("%.9f, ", convert_adc_u12_sample_to_s16(samples[i]));
-		if (i%10 == 0)
-			printf("\n");
-	}
 	for (;;)
 		;
+
+	/* TODO revert to this */
+	/*adc_run(true);*/
+
 	/*for (;;)*/
 		/*__asm__("wfi");*/
+
 }
 
+/* TODO make sure this core doesn't receive ADC interrupts */
+/* TODO explain all of what this does when finished and displaying to screen */
+/* TODO timing. need to finish processing before sampling core catches back up */
+static void processing_core(void)
+{
+	int frame_start_index;
+	float32_t *framed_samples, *freq_bin_magnitudes;
+	int max_bin_ind;
+	float32_t frequency; 
+	struct note_freq *nf;
+
+	sleep_ms(2000);
+	printf("proc core start\n");
+
+	for (;;) {
+		/* Wait for sampling core to finish filling a frame. */
+		/*frame_start_index = multicore_fifo_pop_blocking();*/
+		frame_start_index = 0;
+		framed_samples = samples + frame_start_index;
+
+		/* DSP. */
+		printf("start samples to mag\n");
+		/* TODO FFT taking too long? */
+		freq_bin_magnitudes = samples_to_freq_bin_magnitudes_f32(framed_samples, FRAME_LEN_4096);
+		printf("start hps\n");
+		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN_4096);
+		printf("rest\n");
+		max_bin_ind = max_bin_index(freq_bin_magnitudes, FRAME_LEN_4096);
+		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN_4096));
+		nf = nearest_note(frequency);
+
+		/* TODO display to screen not serial */
+		printf("freq %.3f, ", frequency);
+		if (nf)
+			printf("nearest note (%s, %.3f)\n", nf->note_name, nf->frequency);
+		else
+			printf("nearest note ???\n");
+		/* 
+		 * TODO don't report note if it's too quiet? so don't get spurious results 
+		 * when nothing playing. try out by printing max value of mag
+		 */
+		/* TODO rm */
+	}
+}
+
+/* TODO explain high-level interaction between the cores here or somewhere? */
 int main(void)
 {
 	stdio_usb_init();/*TODO for one core? both? none?*/
-	/* TODO make sure second core doesn't receive ADC interrupts */
-	/* TODO explain high-level interaction between the cores here? */
 
-	/* TODO this is sampling core. start other processing core and sleep in that
-	 * until woken up by sampling core*/
+	/* TODO rm */
+	for (int i = 8; i > 0; --i) {
+		printf("cdown %d\n", i);
+		sleep_ms(1000);
+	}
+
+	multicore_launch_core1(processing_core);
+
+	/* Core 0 (this core) is the sampling core. */
+
 	sampler_init(4096);  /*TODO define */
 	sampler_start();
 }
+

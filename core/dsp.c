@@ -14,16 +14,8 @@
  * its SDK runtime libraries, it's just that pure Cortex-M0+ doesn't
  */
 
-static void s16_array_to_f32(const int16_t *src, float32_t *dest, int len)
+float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum frame_length frame_len)
 {
-	for (int i = 0; i < len; ++i) 
-		/* TODO need to scale range of short up to range of float? */
-		dest[i] = (float32_t)src[i];
-}
-
-float32_t *samples_to_freq_bin_magnitudes(const int16_t *samples, enum frame_length frame_len)
-{
-	static float32_t float_samples[MAX_FRAME_LEN];
 	static float32_t fir_state[NR_TAPS+MAX_FRAME_LEN-1];
 	arm_fir_instance_f32 fir_instance;
 	static float32_t filtered_samples[MAX_FRAME_LEN]; 
@@ -31,14 +23,14 @@ float32_t *samples_to_freq_bin_magnitudes(const int16_t *samples, enum frame_len
 	static float32_t fft_complex_nrs[MAX_FRAME_LEN];
 	static float32_t freq_bin_magnitudes[MAX_NR_BINS];
 
-	s16_array_to_f32(samples, float_samples, frame_len);
 	/* 
 	 * TODO how to test this? 
 	 * with sine waves below and above the cutoff
 	 */
 	/* Apply band-pass filter. */
+	/* TODO only init once? */
 	arm_fir_init_f32(&fir_instance, NR_TAPS, filter_coefficients, fir_state, frame_len);
-	arm_fir_f32(&fir_instance, float_samples, filtered_samples, frame_len);
+	arm_fir_f32(&fir_instance, samples, filtered_samples, frame_len);
 	/* 
 	 * TODO don't do this every time? only do it on the first time a size is used? 
 	 * look into source for whether need to
@@ -54,6 +46,20 @@ float32_t *samples_to_freq_bin_magnitudes(const int16_t *samples, enum frame_len
 	 */
 	arm_cmplx_mag_f32(fft_complex_nrs, freq_bin_magnitudes, MAX_NR_BINS);
 	return freq_bin_magnitudes;
+}
+
+/* TODO is there a CMSIS-DSP fn for this? */
+static void s16_array_to_f32(const int16_t *src, float32_t *dest, int len)
+{
+	for (int i = 0; i < len; ++i) 
+		dest[i] = (float32_t)src[i];
+}
+
+float32_t *samples_to_freq_bin_magnitudes_s16(const int16_t *samples, enum frame_length frame_len)
+{
+	static float32_t float_samples[MAX_FRAME_LEN];
+	s16_array_to_f32(samples, float_samples, frame_len);
+	return samples_to_freq_bin_magnitudes_f32(float_samples, frame_len);
 }
 
 int nr_bins(enum frame_length frame_len)

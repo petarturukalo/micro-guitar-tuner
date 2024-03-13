@@ -16,7 +16,7 @@ add_executable(guitar-tuner guitar_tuner.c)
 # - only link against needed libs
 # - only link on pico_stdio_usb on debug build? or doesn't matter?
 # Add pico SDK libs.
-target_link_libraries(guitar-tuner pico_stdlib hardware_adc)
+target_link_libraries(guitar-tuner pico_stdlib hardware_adc pico_multicore)
 # Add internal (core) lib. 
 target_link_libraries(guitar-tuner libcore)
 

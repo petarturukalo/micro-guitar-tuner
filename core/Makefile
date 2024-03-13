@@ -3,11 +3,17 @@
 # ensure to include compiler_vars.mk (see it for more info) and, if cross compiling, 
 # that the cross_prefix variable (mentioned in compiler_vars.mk) is exported.
 
-# TODO using ARM_ALL_FFT_TABLES for now during testing. but replace it with only the
-# defines for the tables i need (see RFFT_FAST_F32_<frame len> from CMSIS-DSP/Source/fft.cmake,
-# and explanation in CMSIS-DSP/README.md). also explain what the defines are for after replacement
-CFLAGS += -DARM_FFT_ALLOW_TABLES \
-	  -DARM_ALL_FFT_TABLES
+# Allow the FFT table defines to take effect.
+CFLAGS += -DARM_DSP_CONFIG_TABLES -DARM_FFT_ALLOW_TABLES
+# Flags to enable 32-bit float real FFT, frame length 4096. 
+# See RFFT_FAST_<type>_<frame len> (e.g. RFFT_FAST_F32_4096) from CMSIS-DSP/Source/fft.cmake 
+# for the defines needed to use a real FFT of a particular data type and frame length.
+# Only define exactly what's needed as each real FFT type uses its own tables which
+# take up a lot of memory and will bloat the final executable.
+# TODO enable frame len 2048?
+CFLAGS += -DARM_TABLE_TWIDDLECOEF_F32_2048 -DARM_TABLE_BITREVIDX_FLT_2048 -DARM_TABLE_TWIDDLECOEF_RFFT_F32_4096
+# TODO 
+CFLAGS += -Ofast
 
 # Objects local to the core lib.
 objs = dsp.o note.o adc.o
