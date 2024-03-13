@@ -43,7 +43,7 @@ target_include_directories(libcore INTERFACE
 			   ${CMAKE_SOURCE_DIR}/../include 
 			   ${CMAKE_SOURCE_DIR}/../CMSIS-DSP/Include
 			   ${CMAKE_SOURCE_DIR}/../CMSIS_6/CMSIS/Core/Include)
-set_target_properties(libcore PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../core/libcore.a)
+set_target_properties(libcore PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../core/libcore-M.a)
 add_dependencies(libcore build_libcore)
 
 # TODO note 'make clean' in build/ dir won't clean libcore. can't add a clean_libcore and make it

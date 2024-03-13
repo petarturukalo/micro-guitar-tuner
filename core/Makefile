@@ -1,22 +1,27 @@
 # This makefile shouldn't be used directly, only invoked from a parent makefile 
 # which has a dependency on this core lib. To use it from such a parent makefile,
-# ensure to include compiler_vars.mk (see it for more info) and, if cross compiling, 
-# that the cross_prefix variable (mentioned in compiler_vars.mk) is exported.
+# ensure to include compiler_vars.mk (see it for more info) and that variables 
+# arm_arch_profile and cross_prefix are exported (the latter only if cross compiling).
 
-# Allow the FFT table defines to take effect.
-CFLAGS += -DARM_DSP_CONFIG_TABLES -DARM_FFT_ALLOW_TABLES
+# Number of filter coefficients. See the gen_filter_coeffs.m script.
+# Don't forget to clean and regenerate filter_coeffs.c if the value of this variable changes.
+# TODO where to explain the problems a high nr taps was causing (severe slowdowns; in gen_filter_coeffs.m?)
+nr_taps = 2000
+
+CFLAGS += -DNR_TAPS=$(nr_taps)
 # Flags to enable 32-bit float real FFT, frame length 4096. 
 # See RFFT_FAST_<type>_<frame len> (e.g. RFFT_FAST_F32_4096) from CMSIS-DSP/Source/fft.cmake 
 # for the defines needed to use a real FFT of a particular data type and frame length.
 # Only define exactly what's needed as each real FFT type uses its own tables which
 # take up a lot of memory and will bloat the final executable.
 # TODO enable frame len 2048?
-CFLAGS += -DARM_TABLE_TWIDDLECOEF_F32_2048 -DARM_TABLE_BITREVIDX_FLT_2048 -DARM_TABLE_TWIDDLECOEF_RFFT_F32_4096
-# TODO 
-CFLAGS += -Ofast
+CFLAGS += -DARM_DSP_CONFIG_TABLES -DARM_FFT_ALLOW_TABLES \
+	  -DARM_TABLE_TWIDDLECOEF_F32_2048 -DARM_TABLE_BITREVIDX_FLT_2048 -DARM_TABLE_TWIDDLECOEF_RFFT_F32_4096
+# TODO explain
+#CFLAGS += -Ofast
 
 # Objects local to the core lib.
-objs = dsp.o note.o adc.o
+objs = dsp.o note.o adc.o filter_coeffs.o
 # Dependent CMSIS DSP objects.
 # TODO better way to do this? maybe CMSIS DSP provides a cmake interface?
 objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
@@ -32,16 +37,26 @@ objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
 	../CMSIS-DSP/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o \
 	../CMSIS-DSP/Source/StatisticsFunctions/arm_max_f32.o \
 	../CMSIS-DSP/Source/FastMathFunctions/arm_vlog_f32.o
+# Suffix objects and lib with ARM arch profile to separate the test (Cortex-A) and mcu 
+# (Cortex-M) build artifacts and prevent them from clashing and breaking the other's build.
+objs := $(patsubst %.o,%-$(arm_arch_profile).o,$(objs))
+libcore = libcore-$(arm_arch_profile).a
 
 
-libcore.a: $(objs)
+$(libcore): $(objs) 
 	$(cross_prefix)$(AR) rsc --thin $@ $^
 
+%-$(arm_arch_profile).o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+filter_coeffs.c: print_filter_coeffs.m gen_filter_coeffs.m
+	octave print_filter_coeffs.m $(nr_taps) > $@
+
 clean:
-	rm $(objs) libcore.a
+	rm $(objs) filter_coeffs.c $(libcore)
+
+plot-filter-coeffs: plot_filter_coeffs.m gen_filter_coeffs.m
+	octave plot_filter_coeffs.m $(nr_taps)
 
 # TODO
-# - when start on mcu code and compiling for cortex-m, need to make 
-# sure cortex-m objs don't get mixed together with cortex-a objs. 
-# might need to give them different names, and the libs diff names too
-# (suffix with -a and -m before the extension??).
+# - document plot-filter-coeffs in a readme that it's to visualise the filter

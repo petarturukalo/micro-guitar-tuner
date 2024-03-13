@@ -4,7 +4,6 @@
 #include <dsp/statistics_functions.h>
 #include "dsp.h"
 #include "note.h"
-#include "filter_coeffs.c"
 #include <stdbool.h>
 
 /* 
@@ -13,6 +12,8 @@
  * TODO pico might actually have single precision float support available through
  * its SDK runtime libraries, it's just that pure Cortex-M0+ doesn't
  */
+
+extern const float32_t filter_coefficients[NR_TAPS];
 
 float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum frame_length frame_len)
 {
@@ -28,7 +29,7 @@ float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum fra
 	 * with sine waves below and above the cutoff
 	 */
 	/* Apply band-pass filter. */
-	/* TODO only init once? */
+	/* TODO only init once? probably only once because the state will get trashed? */
 	arm_fir_init_f32(&fir_instance, NR_TAPS, filter_coefficients, fir_state, frame_len);
 	arm_fir_f32(&fir_instance, samples, filtered_samples, frame_len);
 	/* 

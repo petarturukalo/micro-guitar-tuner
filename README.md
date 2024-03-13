@@ -10,7 +10,7 @@ it relates/fulfills the motivation if possible (e.g. coin cell battery, so neede
 - list dependent software: SDK, RTOS if applicable, etc., and why software architecture
 is the way it is (because wanted Pico)
 -- CMSIS DSP/core
--- gnu octave (optional)
+-- gnu octave 
 -- gnuplot? (optional)
 -- TODO also list exact versions of software?
 - can list theory books if needed for reader's further knowledge. 

@@ -60,7 +60,7 @@ static void adc_isr(void)
 		/* TODO if use FreeRTOS SMP can't use these multicore fifo fns directly? */
 		/* Send start index of frame to processing core. */
 		/* TODO safe to use in IRQ? */
-		/*multicore_fifo_push_blocking(i-FRAME_LEN_4096);*/
+		multicore_fifo_push_blocking(i-FRAME_LEN_4096);
 		if (i == FRAME_LEN_4096*2)
 			i = 0;
 	}
@@ -107,19 +107,19 @@ static void sampler_init(int sampling_rate)
  */
 static void sampler_start(void)
 {
-	absolute_time_t tm = make_timeout_time_ms(1000);
-	adc_run(true);
-	while (get_absolute_time() < tm)
-		;
-	adc_run(false);
-	for (;;)
-		;
+	/*absolute_time_t tm = make_timeout_time_ms(1000);*/
+	/*adc_run(true);*/
+	/*while (get_absolute_time() < tm)*/
+		/*;*/
+	/*adc_run(false);*/
+	/*for (;;)*/
+		/*;*/
 
 	/* TODO revert to this */
-	/*adc_run(true);*/
+	adc_run(true);
 
-	/*for (;;)*/
-		/*__asm__("wfi");*/
+	for (;;)
+		__asm__("wfi");
 
 }
 
@@ -134,22 +134,22 @@ static void processing_core(void)
 	float32_t frequency; 
 	struct note_freq *nf;
 
-	sleep_ms(2000);
-	printf("proc core start\n");
+	/*sleep_ms(2000);*/
+	/*printf("proc core start\n");*/
 
+	/* TODO make sure cores are synchronised and other core waits for this to get here. */
 	for (;;) {
 		/* Wait for sampling core to finish filling a frame. */
-		/*frame_start_index = multicore_fifo_pop_blocking();*/
-		frame_start_index = 0;
+		frame_start_index = multicore_fifo_pop_blocking();
 		framed_samples = samples + frame_start_index;
 
 		/* DSP. */
-		printf("start samples to mag\n");
+		/*printf("start samples to mag\n");*/
 		/* TODO FFT taking too long? */
 		freq_bin_magnitudes = samples_to_freq_bin_magnitudes_f32(framed_samples, FRAME_LEN_4096);
-		printf("start hps\n");
+		/*printf("start hps\n");*/
 		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN_4096);
-		printf("rest\n");
+		/*printf("rest\n");*/
 		max_bin_ind = max_bin_index(freq_bin_magnitudes, FRAME_LEN_4096);
 		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN_4096));
 		nf = nearest_note(frequency);
@@ -164,7 +164,6 @@ static void processing_core(void)
 		 * TODO don't report note if it's too quiet? so don't get spurious results 
 		 * when nothing playing. try out by printing max value of mag
 		 */
-		/* TODO rm */
 	}
 }
 
@@ -174,10 +173,10 @@ int main(void)
 	stdio_usb_init();/*TODO for one core? both? none?*/
 
 	/* TODO rm */
-	for (int i = 8; i > 0; --i) {
-		printf("cdown %d\n", i);
-		sleep_ms(1000);
-	}
+	/*for (int i = 8; i > 0; --i) {*/
+		/*printf("cdown %d\n", i);*/
+		/*sleep_ms(1000);*/
+	/*}*/
 
 	multicore_launch_core1(processing_core);
 
