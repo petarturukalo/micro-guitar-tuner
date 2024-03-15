@@ -18,6 +18,8 @@ static bool assert_sine_wave_freq_to_bin_index(const char *sine_freq_str, int i,
 	int expected_bin_index, actual_bin_index;
 
 	sscanf(sine_freq_str, "%f", &sine_freq);
+	if (i == 1)
+		samples_to_freq_bin_magnitudes_init(frame_len);
 	freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
 	expected_bin_index = freq_to_bin_index(sine_freq, bin_width(frame_len));
 	actual_bin_index = max_bin_index(freq_bin_magnitudes, frame_len);
@@ -94,6 +96,8 @@ static bool assert_hps(const char *note_name, int i, const int16_t *samples, enu
 	float32_t note_freq;
 	int expected_bin_index, actual_bin_index;
 
+	if (i == 1)
+		samples_to_freq_bin_magnitudes_init(frame_len);
 	freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
 	harmonic_product_spectrum(freq_bin_magnitudes, frame_len);
 

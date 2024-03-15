@@ -107,15 +107,6 @@ static void sampler_init(int sampling_rate)
  */
 static void sampler_start(void)
 {
-	/*absolute_time_t tm = make_timeout_time_ms(1000);*/
-	/*adc_run(true);*/
-	/*while (get_absolute_time() < tm)*/
-		/*;*/
-	/*adc_run(false);*/
-	/*for (;;)*/
-		/*;*/
-
-	/* TODO revert to this */
 	adc_run(true);
 
 	for (;;)
@@ -134,8 +125,7 @@ static void processing_core(void)
 	float32_t frequency; 
 	struct note_freq *nf;
 
-	/*sleep_ms(2000);*/
-	/*printf("proc core start\n");*/
+	samples_to_freq_bin_magnitudes_init(FRAME_LEN_4096);
 
 	/* TODO make sure cores are synchronised and other core waits for this to get here. */
 	for (;;) {
@@ -144,12 +134,8 @@ static void processing_core(void)
 		framed_samples = samples + frame_start_index;
 
 		/* DSP. */
-		/*printf("start samples to mag\n");*/
-		/* TODO FFT taking too long? */
 		freq_bin_magnitudes = samples_to_freq_bin_magnitudes_f32(framed_samples, FRAME_LEN_4096);
-		/*printf("start hps\n");*/
 		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN_4096);
-		/*printf("rest\n");*/
 		max_bin_ind = max_bin_index(freq_bin_magnitudes, FRAME_LEN_4096);
 		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN_4096));
 		nf = nearest_note(frequency);
@@ -172,17 +158,11 @@ int main(void)
 {
 	stdio_usb_init();/*TODO for one core? both? none?*/
 
-	/* TODO rm */
-	/*for (int i = 8; i > 0; --i) {*/
-		/*printf("cdown %d\n", i);*/
-		/*sleep_ms(1000);*/
-	/*}*/
-
 	multicore_launch_core1(processing_core);
 
 	/* Core 0 (this core) is the sampling core. */
 
-	sampler_init(4096);  /*TODO define */
+	sampler_init(OVERSAMPLING_RATE);
 	sampler_start();
 }
 

@@ -3,10 +3,10 @@
 # ensure to include compiler_vars.mk (see it for more info) and that variables 
 # arm_arch_profile and cross_prefix are exported (the latter only if cross compiling).
 
-# Number of filter coefficients. See the gen_filter_coeffs.m script.
-# Don't forget to clean and regenerate filter_coeffs.c if the value of this variable changes.
-# TODO where to explain the problems a high nr taps was causing (severe slowdowns; in gen_filter_coeffs.m?)
-nr_taps = 2000
+# Number of filter coefficients. See the gen_filter_coeffs.m script for more info.
+# The filtering is a huge bottleneck for the processing core on the pico, so this
+# can't be too high. 
+nr_taps = 128
 
 CFLAGS += -DNR_TAPS=$(nr_taps)
 # Flags to enable 32-bit float real FFT, frame length 4096. 
@@ -18,7 +18,7 @@ CFLAGS += -DNR_TAPS=$(nr_taps)
 CFLAGS += -DARM_DSP_CONFIG_TABLES -DARM_FFT_ALLOW_TABLES \
 	  -DARM_TABLE_TWIDDLECOEF_F32_2048 -DARM_TABLE_BITREVIDX_FLT_2048 -DARM_TABLE_TWIDDLECOEF_RFFT_F32_4096
 # TODO explain
-#CFLAGS += -Ofast
+CFLAGS += -Ofast
 
 # Objects local to the core lib.
 objs = dsp.o note.o adc.o filter_coeffs.o

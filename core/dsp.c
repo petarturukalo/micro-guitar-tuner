@@ -15,12 +15,19 @@
 
 extern const float32_t filter_coefficients[NR_TAPS];
 
-float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum frame_length frame_len)
+static arm_fir_instance_f32 fir_instance;
+static arm_rfft_fast_instance_f32 fft_instance;
+
+void samples_to_freq_bin_magnitudes_init(enum frame_length frame_len)
 {
 	static float32_t fir_state[NR_TAPS+MAX_FRAME_LEN-1];
-	arm_fir_instance_f32 fir_instance;
+	arm_fir_init_f32(&fir_instance, NR_TAPS, filter_coefficients, fir_state, frame_len);
+	arm_rfft_fast_init_f32(&fft_instance, frame_len);
+}
+
+float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum frame_length frame_len)
+{
 	static float32_t filtered_samples[MAX_FRAME_LEN]; 
-	arm_rfft_fast_instance_f32 fft_instance;
 	static float32_t fft_complex_nrs[MAX_FRAME_LEN];
 	static float32_t freq_bin_magnitudes[MAX_NR_BINS];
 
@@ -29,15 +36,8 @@ float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum fra
 	 * with sine waves below and above the cutoff
 	 */
 	/* Apply band-pass filter. */
-	/* TODO only init once? probably only once because the state will get trashed? */
-	arm_fir_init_f32(&fir_instance, NR_TAPS, filter_coefficients, fir_state, frame_len);
 	arm_fir_f32(&fir_instance, samples, filtered_samples, frame_len);
-	/* 
-	 * TODO don't do this every time? only do it on the first time a size is used? 
-	 * look into source for whether need to
-	 */
 	/* Convert from time domain to frequency domain. */
-	arm_rfft_fast_init_f32(&fft_instance, frame_len);
 	arm_rfft_fast_f32(&fft_instance, filtered_samples, fft_complex_nrs, 0);
 	/* TODO worry about different format / caveats when swap to q notation? */
 	/* TODO zero first mag because it's mag of 2 reals DC and nyquist? */
