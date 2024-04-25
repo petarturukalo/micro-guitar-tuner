@@ -27,6 +27,8 @@ tuner using my source
 - should link to pico docs at all (pico sdk?)? or reader expected to be familiar? can ref pico sdk
 or other material to remind them how to build it and because it's dependent lib, or give instructions on making it with cmake
 -- rp2040 datasheet adc section for adc code? and NVIC? and sleep mode?
+-- definitely pico SDK
+-- SSD1306 datasheet?
 -- main pico webpage for pin layout?
 - mention how to run tests (emulation, graph outputs, etc.). or put in test/README.md and
 tell reader to go look there

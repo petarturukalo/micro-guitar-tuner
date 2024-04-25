@@ -10,6 +10,7 @@ struct note_freq {
 
 /* Table of notes and their frequencies to 3 decimal places. */
 extern struct note_freq note_freqs[];
+extern struct note_freq null_nf;
 
 /*
  * Get the frequency of the lowest note C0.
@@ -32,7 +33,7 @@ float32_t lowest_note_frequency(void);
  * TODO reference this function was taken from the digital audio with java book
  * TODO should be returning int because cents is int, but that would ruin the tests?
  */
-float32_t cents_difference(float32_t frequency, struct note_freq *reference);
+int cents_difference(float32_t frequency, struct note_freq *reference);
 
 /* 
  * Get the note closest to the input frequency. The returned note will be at most 

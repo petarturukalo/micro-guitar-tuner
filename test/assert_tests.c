@@ -1,6 +1,7 @@
 #include "dsp.h"
 #include "adc.h"
 #include "note.h"
+#include "2d_bit_array.h"
 #include "assert.h"
 #include "file_source.h"
 #include <stddef.h>
@@ -110,16 +111,8 @@ static bool assert_hps(const char *note_name, int i, const int16_t *samples, enu
 	return true;
 }
 
-static bool semitone_cents_diff_within_tolerance(float32_t cents_diff)
-{
-	const float32_t tolerance = 0.1;
-	/* TODO abs won't work with q notation? */
-	return fabs(fabs(cents_diff) - CENTS_IN_SEMITONE) <= tolerance;
-}
-
 /* 
- * Assert each pair of adjacent notes in note_freqs is about CENTS_IN_SEMITONE 
- * (within some tolerance) apart from each other. 
+ * Assert each pair of adjacent notes in note_freqs is CENTS_IN_SEMITONE cents apart from each other. 
  */
 static void test_cents_difference(void)
 {
@@ -129,17 +122,17 @@ static void test_cents_difference(void)
 	cur = note_freqs;
 	while (cur->note_name) {
 		if (prev) {
-			float32_t cents_diff = cents_difference(cur->frequency, prev);
+			int cents_diff = cents_difference(cur->frequency, prev);
 			Assert(cents_diff > 0, "prev %s, cur %s, cents diff %.3f", prev->note_name, cur->note_name, cents_diff);
-			Assert(semitone_cents_diff_within_tolerance(cents_diff), "prev %s, cur %s, cents diff %.3f", 
-										 prev->note_name, cur->note_name, cents_diff);
+			Assert(cents_diff == CENTS_IN_SEMITONE, "prev %s, cur %s, cents diff %.3f", 
+								prev->note_name, cur->note_name, cents_diff);
 		}
 		next = cur+1;
 		if (next->note_name) {
-			float32_t cents_diff = cents_difference(cur->frequency, next);
+			int cents_diff = cents_difference(cur->frequency, next);
 			Assert(cents_diff < 0, "next %s, cur %s, cents diff %.3f", next->note_name, cur->note_name, cents_diff);
-			Assert(semitone_cents_diff_within_tolerance(cents_diff), "next %s, cur %s, cents diff %.3f", 
-										 next->note_name, cur->note_name, cents_diff);
+			Assert(cents_diff == -CENTS_IN_SEMITONE, "next %s, cur %s, cents diff %.3f", 
+								 next->note_name, cur->note_name, cents_diff);
 		}
 		prev = cur++;
 	}
@@ -165,6 +158,42 @@ static void test_convert_adc_u12_sample_to_s16(void)
 	assert_convert_adc_u12_sample_to_s16(4095, INT16_MAX);
 }
 
+void assert_bit_array_2d_copy(uint8_t *dest_bit_array, int dest_ncols, int dest_nrows,
+			      uint8_t *src_bit_array, int src_ncols, int src_nrows,
+			      struct write_coord coord,
+			      uint8_t *expected_bit_array)  /* Expected has the same dimensions as dest. */
+{
+	bit_array_2d_copy(dest_bit_array, dest_ncols, dest_nrows,
+			  src_bit_array, src_ncols, src_nrows,
+			  coord);
+	Assert(memcmp(dest_bit_array, expected_bit_array, (dest_ncols*dest_nrows)/BITS_IN_BYTE) == 0, NULL);
+}
+
+static void test_bit_array_2d_copy(void)
+{
+	/* 
+	 * Testing bit_array_2d_copy() implicitly tests the rest of the functions in
+	 * file '2d_bit_array.c'.
+	 */
+	assert_bit_array_2d_copy((uint8_t[]){ 0b00000000,0b00000000,0b00000000,
+					      0b00000000,0b00000000,0b00000000 }, 24, 2,
+				 (uint8_t[]){ 0b10101010,0b01010101,0b11111111,
+					      0b00001111,0b00000000,0b11110000 }, 24, 2,
+				 (struct write_coord){ 0, 0 },
+				 (uint8_t[]){ 0b10101010,0b01010101,0b11111111,
+					      0b00001111,0b00000000,0b11110000 });
+
+	assert_bit_array_2d_copy((uint8_t[]){ 0b11100000,0b00000000,0b00000000,
+					      0b11100000,0b00000000,0b00000000,
+					      0b11100000,0b00000000,0b00000000 }, 24, 3,
+				 (uint8_t[]){ 0b11000000,
+					      0b11000000, }, 8, 2,
+				 (struct write_coord){ 1, 15 },
+				 (uint8_t[]){ 0b11100000,0b00000000,0b00000000,
+					      0b11100000,0b00000001,0b10000000,
+					      0b11100000,0b00000001,0b10000000 });
+}
+
 /* TODO explain (running assert tests) */
 int main(void)
 {
@@ -182,6 +211,7 @@ int main(void)
 	test_cents_difference();
 
 	test_convert_adc_u12_sample_to_s16();
+	test_bit_array_2d_copy();
 
 	return !print_asserts_summary();
 }

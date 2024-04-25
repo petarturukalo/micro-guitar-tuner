@@ -1,5 +1,6 @@
 #include "note.h"
 #include <dsp/fast_math_functions.h>
+#include <math.h>
 
 struct note_freq note_freqs[] = {
 	{ "C0",  16.351 },
@@ -116,6 +117,9 @@ struct note_freq note_freqs[] = {
 	{ 0 }
 };
 
+struct note_freq null_nf = { "?", 0 };
+
+
 float32_t lowest_note_frequency(void)
 {
 	return note_freqs[0].frequency;
@@ -133,9 +137,9 @@ static float32_t Log2(float32_t x)
 	return log_of_x/log_of_2;
 }
 
-float32_t cents_difference(float32_t frequency, struct note_freq *reference)
+int cents_difference(float32_t frequency, struct note_freq *reference)
 {
-	return -CENTS_IN_OCTAVE*Log2(reference->frequency/frequency);
+	return round(-CENTS_IN_OCTAVE*Log2(reference->frequency/frequency));
 }
 
 struct note_freq *nearest_note(float32_t frequency)
@@ -158,3 +162,4 @@ struct note_freq *nearest_note(float32_t frequency)
 	/* Not allowing frequencies higher than the highest note. */
 	return NULL;
 }
+

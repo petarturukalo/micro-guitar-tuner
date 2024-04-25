@@ -21,7 +21,7 @@ CFLAGS += -DARM_DSP_CONFIG_TABLES -DARM_FFT_ALLOW_TABLES \
 CFLAGS += -Ofast
 
 # Objects local to the core lib.
-objs = dsp.o note.o adc.o filter_coeffs.o
+objs = dsp.o note.o adc.o filter_coeffs.o 2d_bit_array.o
 # Dependent CMSIS DSP objects.
 # TODO better way to do this? maybe CMSIS DSP provides a cmake interface?
 objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \

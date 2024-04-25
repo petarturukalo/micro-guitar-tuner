@@ -27,6 +27,11 @@ void samples_to_freq_bin_magnitudes_init(enum frame_length frame_len)
 
 float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum frame_length frame_len)
 {
+	/* 
+	 * TODO if using STM32 / other MCU with smaller RAM reuse arrays to save space. change name to 
+	 * a pointer and just set to what it'll be reusing. even return can reuse. if dual core then 
+	 * trample input. maybe give the bufs general names then can redeclare all of these as pointers 
+	 */
 	static float32_t filtered_samples[MAX_FRAME_LEN]; 
 	static float32_t fft_complex_nrs[MAX_FRAME_LEN];
 	static float32_t freq_bin_magnitudes[MAX_NR_BINS];
@@ -56,6 +61,7 @@ static void s16_array_to_f32(const int16_t *src, float32_t *dest, int len)
 		dest[i] = (float32_t)src[i];
 }
 
+/* TODO make this only compiled for test binary as it wastes MCU RAM. */
 float32_t *samples_to_freq_bin_magnitudes_s16(const int16_t *samples, enum frame_length frame_len)
 {
 	static float32_t float_samples[MAX_FRAME_LEN];
