@@ -77,7 +77,6 @@ static void test_hps_find_harmonic_peaks(void)
 	assert_hps_find_harmonic_peaks(83, 1);
 }
 
-/* TODO rename inline to whatever else gets added to note.h */
 static float32_t note_frequency(const char *note_name)
 {
 	struct note_freq *nf = note_freqs;

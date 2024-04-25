@@ -31,7 +31,6 @@ float32_t lowest_note_frequency(void);
  *
  * TODO explain log scale, etc?
  * TODO reference this function was taken from the digital audio with java book
- * TODO should be returning int because cents is int, but that would ruin the tests?
  */
 int cents_difference(float32_t frequency, struct note_freq *reference);
 

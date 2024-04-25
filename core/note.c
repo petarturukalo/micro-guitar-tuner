@@ -125,21 +125,9 @@ float32_t lowest_note_frequency(void)
 	return note_freqs[0].frequency;
 }
 
-/* TODO if don't end up using q notation just use math.h logs */
-static float32_t Log2(float32_t x)
-{
-	const float32_t base = 2;
-	float32_t log_of_x, log_of_2;
-
-	arm_vlog_f32(&x, &log_of_x, 1);
-	arm_vlog_f32(&base, &log_of_2, 1);
-
-	return log_of_x/log_of_2;
-}
-
 int cents_difference(float32_t frequency, struct note_freq *reference)
 {
-	return round(-CENTS_IN_OCTAVE*Log2(reference->frequency/frequency));
+	return round(-CENTS_IN_OCTAVE*log2f(reference->frequency/frequency));
 }
 
 struct note_freq *nearest_note(float32_t frequency)

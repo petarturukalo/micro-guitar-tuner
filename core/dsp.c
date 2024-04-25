@@ -6,13 +6,6 @@
 #include "note.h"
 #include <stdbool.h>
 
-/* 
- * TODO change float32_t to q notation later if find can't use it on cortex-m0+ 
- * (most likely will need to use q notation) 
- * TODO pico might actually have single precision float support available through
- * its SDK runtime libraries, it's just that pure Cortex-M0+ doesn't
- */
-
 extern const float32_t filter_coefficients[NR_TAPS];
 
 static arm_fir_instance_f32 fir_instance;
@@ -44,8 +37,11 @@ float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum fra
 	arm_fir_f32(&fir_instance, samples, filtered_samples, frame_len);
 	/* Convert from time domain to frequency domain. */
 	arm_rfft_fast_f32(&fft_instance, filtered_samples, fft_complex_nrs, 0);
-	/* TODO worry about different format / caveats when swap to q notation? */
-	/* TODO zero first mag because it's mag of 2 reals DC and nyquist? */
+	/* 
+	 * Zero the first complex number because it's the DC offset and value at the Nyquist frequency 
+	 * masquerading as a complex number.
+	 */
+	fft_complex_nrs[0] = fft_complex_nrs[1] = 0;
 	/* 
 	 * Get the energy of the spectra. Use regular mag over mag squared because the numbers mag
 	 * squared ouput are too big and cause the result of HPS to overflow and give wrong results. 
@@ -54,7 +50,6 @@ float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum fra
 	return freq_bin_magnitudes;
 }
 
-/* TODO is there a CMSIS-DSP fn for this? */
 static void s16_array_to_f32(const int16_t *src, float32_t *dest, int len)
 {
 	for (int i = 0; i < len; ++i) 
