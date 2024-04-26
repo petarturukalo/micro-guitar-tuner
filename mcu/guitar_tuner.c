@@ -108,6 +108,9 @@ static void sampler_init(int sampling_rate)
  */
 static void sampler_start(void)
 {
+	/* Synchronise with the processing core, waiting for it to finish its initialisation. */
+	multicore_fifo_push_blocking(0);
+
 	adc_run(true);
 
 	for (;;)
@@ -185,7 +188,9 @@ static void processing_core(void)
 	/* Show a question mark. */
 	display_note_and_slider(0);
 
-	/* TODO make sure cores are synchronised and other core waits for this to get here. */
+	/* Synchronise with the sampling core, waiting for it to finish its initialisation. */
+	multicore_fifo_pop_blocking();
+
 	for (;;) {
 		/* Wait for sampling core to finish filling a frame. */
 		frame_start_index = multicore_fifo_pop_blocking();
