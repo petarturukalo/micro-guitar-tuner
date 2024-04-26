@@ -37,16 +37,15 @@ static void adc_set_sampling_rate(int sampling_rate)
 }
 
 /*
- * TODO explain why this stores 2 frames. so processing core can process while other
- * frame gets filled
+ * This is a circular buffer storing 2 frames worth of samples so that the sampling core 
+ * can fill up the next frame while the processing core processes the full frame.
  */
-/* TODO need volatile for shared? volatile before or after static? */
 static volatile float32_t samples[FRAME_LEN*2];
 
-/* TODO ISR coding style? what's needed for robust ISR? volatile (or that's just for mmio)? certainly not printing */
-/* TODO worry about timing here and making sure it's stored before the next interrupt.
- * RTOS? and for locking variables shared between cores?*/
-/* TODO bother explaining? */
+/*
+ * Store a sample in the next free slot in the samples circular buffer. Signal to the 
+ * proessing core when a frame of samples has been filled so it can process them.
+ */
 static void adc_isr(void) 
 {
 	static int i = 0;
@@ -61,9 +60,7 @@ static void adc_isr(void)
 	 * will never accidentally enter this block.
 	 */
 	if (i%FRAME_LEN == 0) {
-		/* TODO if use FreeRTOS SMP can't use these multicore fifo fns directly? */
 		/* Send start index of frame to processing core. */
-		/* TODO safe to use in IRQ? */
 		multicore_fifo_push_blocking(i-FRAME_LEN);
 		if (i == FRAME_LEN*2)
 			i = 0;
@@ -96,7 +93,7 @@ static void sampler_init(int sampling_rate)
 	adc_fifo_setup(true, 
 		       false,	/* Only for DMA. */
 		       1,	/* Have IRQ trigger for each sample. */
-		       false,	/* TODO set to true and check ERR in ISR? */
+		       false,	/* TODO set to true and check ERR in ISR? maybe use and discard the sample if error? better to have a 0 sample than an error? (maybe?) */
 		       false);	/* Only for DMA. */
 
 	irq_set_exclusive_handler(ADC_IRQ_FIFO, adc_isr);
@@ -174,8 +171,6 @@ static void display_note_and_slider(float32_t frequency)
 	ssd1306_fill_gddram();
 }
 
-/* TODO make sure this core doesn't receive ADC interrupts */
-/* TODO explain all of what this does when finished and displaying to screen */
 /* TODO timing. need to finish processing before sampling core catches back up */
 static void processing_core(void)
 {
@@ -214,7 +209,12 @@ static void processing_core(void)
 	}
 }
 
-/* TODO explain high-level interaction between the cores here or somewhere? */
+/*
+ * There are two cores: a sampling core and a processing core. The sampling core stores samples
+ * in the global samples buffer, signalling to the processing core when it has filled a frame,
+ * for the processing core to then process the samples for a detected closest note and show the 
+ * result on the display.
+ */
 int main(void)
 {
 	stdio_usb_init();/*TODO for one core? both? none?*/
