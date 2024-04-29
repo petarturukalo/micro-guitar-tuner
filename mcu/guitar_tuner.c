@@ -10,6 +10,7 @@
 #include "note.h"
 #include "ssd1306.h"
 #include "font.h"
+#include "power.h"
 
 #define FRAME_LEN FRAME_LEN_4096
 
@@ -87,13 +88,10 @@ static void sampler_init(int sampling_rate)
 	adc_select_input(ADC0_CHANNEL);
 
 	adc_set_sampling_rate(sampling_rate);
-	/* TODO could wake up after 4 samples (FIFO is full) to not have to wake up as often? as long
-	 * as sampling rate is divisible by 4. probably better to do to sleep longer and save power */
-	/* TODO rp2040 datasheet 4.9.2.4. says FIFO is 8 entries? */
 	adc_fifo_setup(true, 
 		       false,	/* Only for DMA. */
 		       1,	/* Have IRQ trigger for each sample. */
-		       false,	/* TODO set to true and check ERR in ISR? maybe use and discard the sample if error? better to have a 0 sample than an error? (maybe?) */
+		       false,
 		       false);	/* Only for DMA. */
 
 	irq_set_exclusive_handler(ADC_IRQ_FIFO, adc_isr);
@@ -114,7 +112,7 @@ static void sampler_start(void)
 	adc_run(true);
 
 	for (;;)
-		__asm__("wfi");
+		__wfi();
 }
 
 /*
@@ -182,6 +180,7 @@ static void processing_core(void)
 	int max_bin_ind;
 	float32_t frequency; 
 
+	power_save_enable_core_deep_sleep();
 	samples_to_freq_bin_magnitudes_init(FRAME_LEN);
 	ssd1306_init_i2c(i2c0, 12, 13, SSD1306_I2C_SLAVE_ADDR_LOW);
 	ssd1306_init();
@@ -192,6 +191,8 @@ static void processing_core(void)
 	multicore_fifo_pop_blocking();
 
 	for (;;) {
+		absolute_time_t start2 = get_absolute_time();//TODO rm
+
 		/* Wait for sampling core to finish filling a frame. */
 		frame_start_index = multicore_fifo_pop_blocking();
 		framed_samples = samples + frame_start_index;
@@ -206,7 +207,9 @@ static void processing_core(void)
 
 		printf("max mag %e, ", freq_bin_magnitudes[max_bin_ind]);
 		display_note_and_slider(frequency);
-		printf("time %llu\n", absolute_time_diff_us(start, get_absolute_time()));//TODO rm
+		absolute_time_t now = get_absolute_time();
+		printf("time %llu/%llu\n", absolute_time_diff_us(start, now),
+					   absolute_time_diff_us(start2, now));//TODO rm
 		/* 
 		 * TODO don't report note if it's too quiet? so don't get spurious results 
 		 * when nothing playing. try out by printing max value of mag
@@ -223,11 +226,13 @@ static void processing_core(void)
 int main(void)
 {
 	stdio_usb_init();/*TODO for one core? both? none?*/
+	power_save_configure_clocks();
 
 	multicore_launch_core1(processing_core);
 
 	/* Core 0 (this core) is the sampling core. */
 
+	power_save_enable_core_deep_sleep();
 	sampler_init(OVERSAMPLING_RATE);
 	sampler_start();
 }

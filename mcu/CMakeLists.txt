@@ -11,7 +11,7 @@ pico_sdk_init()
 
 
 # TODO other sources
-add_executable(guitar-tuner guitar_tuner.c ssd1306.c font.c)
+add_executable(guitar-tuner guitar_tuner.c ssd1306.c font.c power.c)
 # TODO 
 # - only link against needed libs
 # - only link on pico_stdio_usb on debug build? or doesn't matter?
