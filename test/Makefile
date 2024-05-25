@@ -1,6 +1,7 @@
-# TODO don't need to bother with targeting a CPU for tests since can't simulate Cortex-M?
-# maybe comment that can't simulate it so that's why using Cortex-A
 export cross_prefix = arm-linux-gnueabihf-
+# Although the MCU is Cortex-M, emulate Cortex-A instead because these 
+# are user space applications which test non-MCU specific things, e.g. 
+# CMSIS DSP which supports both Cortex-A and Cortex-M. 
 export arm_arch_profile = A
 include ../core/compiler_vars.mk
 # Fix for readdir() not working when emulating 32-bit ARM binary.
