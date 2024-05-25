@@ -8,8 +8,8 @@ CFLAGS += -D_FILE_OFFSET_BITS=64
 
 gen_plots_bin = gen-freq-mag-plots
 assert_tests_bin = assert-tests
-gen_plot_objs = plot.o file_source.o
-assert_tests_objs = assert_tests.o assert.o file_source.o
+gen_plot_objs = plot.o file_source.o dsp_indirect.o
+assert_tests_objs = assert_tests.o assert.o file_source.o dsp_indirect.o
 libcore = ../core/libcore-A.a
 
 

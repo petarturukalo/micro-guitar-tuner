@@ -2,7 +2,7 @@
 #include <string.h>
 #include <errno.h>
 #include "file_source.h"
-#include "dsp.h"
+#include "dsp_indirect.h"
 
 #define XTICS_INCR 100
 

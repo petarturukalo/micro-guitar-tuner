@@ -18,21 +18,12 @@ void samples_to_freq_bin_magnitudes_init(enum frame_length frame_len)
 	arm_rfft_fast_init_f32(&fft_instance, frame_len);
 }
 
-float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum frame_length frame_len)
+float32_t *samples_to_freq_bin_magnitudes(const float32_t *samples, enum frame_length frame_len)
 {
-	/* 
-	 * TODO if using STM32 / other MCU with smaller RAM reuse arrays to save space. change name to 
-	 * a pointer and just set to what it'll be reusing. even return can reuse. if dual core then 
-	 * trample input. maybe give the bufs general names then can redeclare all of these as pointers 
-	 */
 	static float32_t filtered_samples[MAX_FRAME_LEN]; 
 	static float32_t fft_complex_nrs[MAX_FRAME_LEN];
 	static float32_t freq_bin_magnitudes[MAX_NR_BINS];
 
-	/* 
-	 * TODO how to test this? 
-	 * with sine waves below and above the cutoff
-	 */
 	/* Apply band-pass filter. */
 	arm_fir_f32(&fir_instance, samples, filtered_samples, frame_len);
 	/* Convert from time domain to frequency domain. */
@@ -48,20 +39,6 @@ float32_t *samples_to_freq_bin_magnitudes_f32(const float32_t *samples, enum fra
 	 */
 	arm_cmplx_mag_f32(fft_complex_nrs, freq_bin_magnitudes, MAX_NR_BINS);
 	return freq_bin_magnitudes;
-}
-
-static void s16_array_to_f32(const int16_t *src, float32_t *dest, int len)
-{
-	for (int i = 0; i < len; ++i) 
-		dest[i] = (float32_t)src[i];
-}
-
-/* TODO make this only compiled for test binary as it wastes MCU RAM. */
-float32_t *samples_to_freq_bin_magnitudes_s16(const int16_t *samples, enum frame_length frame_len)
-{
-	static float32_t float_samples[MAX_FRAME_LEN];
-	s16_array_to_f32(samples, float_samples, frame_len);
-	return samples_to_freq_bin_magnitudes_f32(float_samples, frame_len);
 }
 
 int nr_bins(enum frame_length frame_len)

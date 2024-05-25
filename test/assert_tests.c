@@ -1,4 +1,4 @@
-#include "dsp.h"
+#include "dsp_indirect.h"
 #include "adc.h"
 #include "note.h"
 #include "2d_bit_array.h"

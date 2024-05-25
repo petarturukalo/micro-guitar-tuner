@@ -224,7 +224,7 @@ static void processing_start(void)
 		proc_start = counter_count();
 
 		/* DSP. */
-		freq_bin_magnitudes = samples_to_freq_bin_magnitudes_f32((const float32_t *)full_samples_frame, FRAME_LEN);
+		freq_bin_magnitudes = samples_to_freq_bin_magnitudes((const float32_t *)full_samples_frame, FRAME_LEN);
 		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN);
 		max_bin_ind = max_bin_index(freq_bin_magnitudes, FRAME_LEN);
 		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN));
