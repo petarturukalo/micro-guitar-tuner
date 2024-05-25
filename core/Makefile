@@ -37,8 +37,7 @@ objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_cfft_radix8_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_bitreversal2.o \
 	../CMSIS-DSP/Source/ComplexMathFunctions/arm_cmplx_mag_f32.o \
-	../CMSIS-DSP/Source/StatisticsFunctions/arm_max_f32.o \
-	../CMSIS-DSP/Source/FastMathFunctions/arm_vlog_f32.o
+	../CMSIS-DSP/Source/StatisticsFunctions/arm_max_f32.o 
 # Suffix objects and lib with ARM arch profile to separate the test (Cortex-A) and mcu 
 # (Cortex-M) build artifacts and prevent them from clashing and breaking the other's build.
 objs := $(patsubst %.o,%-$(arm_arch_profile).o,$(objs))
