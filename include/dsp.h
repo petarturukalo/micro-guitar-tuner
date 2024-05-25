@@ -1,3 +1,7 @@
+/*
+ * Note functions here which operate on samples or reference a sampling
+ * rate assume the sampling rate is OVERSAMPLING_RATE.
+ */
 #ifndef DSP_H
 #define DSP_H
 
@@ -19,9 +23,11 @@
  */
 #define OVERSAMPLING_RATE  OVERSAMPLING_RATE_FROM_MAKEFILE
 
-/* Supported FFT frame lengths (number of samples in a frame). */
+/* 
+ * FFT frame lengths (number of samples in a frame). 
+ * WARNING only FRAME_LEN_4096 is currently supported.
+ */
 enum frame_length {
-/* TODO rm unused later on*/
 	FRAME_LEN_32   = 32,
 	FRAME_LEN_64   = 64,
 	FRAME_LEN_128  = 128,
@@ -70,7 +76,6 @@ float32_t *samples_to_freq_bin_magnitudes(const float32_t *samples, enum frame_l
 int nr_bins(enum frame_length frame_len);
 int bandwidth(void);
 float32_t bin_width(enum frame_length frame_len);
-enum frame_length frame_length_from_bin_width(float32_t binwidth);  /* Return 0 on error. */
 /* Get the index of the bin which the frequency falls into. */
 int freq_to_bin_index(float32_t frequency, float32_t binwidth);
 float32_t bin_index_to_freq(int bin_index, float32_t binwidth);

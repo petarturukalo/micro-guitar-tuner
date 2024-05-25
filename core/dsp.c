@@ -56,16 +56,6 @@ float32_t bin_width(enum frame_length frame_len)
 	return bandwidth()/(float32_t)nr_bins(frame_len);
 }
 
-enum frame_length frame_length_from_bin_width(float32_t binwidth)
-{
-	enum frame_length frame_len = OVERSAMPLING_RATE/binwidth;
-
-	/* TODO support others? unless they're removed later anyway */
-	if (frame_len == FRAME_LEN_2048 || frame_len == FRAME_LEN_4096)
-		return frame_len;
-	return 0;
-}
-
 /* 
  * Round a floating point number to the nearest integer. 
  * If half way between then rounds down.
