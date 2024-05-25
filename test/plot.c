@@ -85,13 +85,6 @@ static bool plot_note_freq_bin_magnitudes_hps(const char *note_name, int i,
 	return _plot_note_freq_bin_magnitudes(note_name, "-hps", i, freq_bin_magnitudes, frame_len);
 }
 
-/*
- * TODO
- * - test with different frame lengths
- * - add cmdline opt for frame length? 
- * - even add cmdline opts for whether to produce mag plots, hps plots, all i frames 
- *	or just i==1 frame (to save space)
- */
 int main(void)
 {
 	return !for_each_note_file_source(FRAME_LEN_4096, plot_note_freq_bin_magnitudes) ||

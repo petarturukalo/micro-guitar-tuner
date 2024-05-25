@@ -65,10 +65,8 @@ enum frame_length {
  * - as write up more source and things get documented elsewhere, add more here or
  *   move documentation it away wherever it's best suited. and use refs to defines
  *   where possible (as they too get added)
- * - explain why takes s16 integers?
  * - explain resolution tradeoffs here or elsewhere? (probably elsewhere because this
  *   is getting verbose)
- * - handle errors and return NULL on error?
  */
 void samples_to_freq_bin_magnitudes_init(enum frame_length frame_len);
 float32_t *samples_to_freq_bin_magnitudes(const float32_t *samples, enum frame_length frame_len);
