@@ -20,7 +20,7 @@ CFLAGS += -DNR_TAPS=$(nr_taps) -DOVERSAMPLING_RATE_FROM_MAKEFILE=$(oversampling_
 # take up a lot of memory and will bloat the final executable.
 CFLAGS += -DARM_DSP_CONFIG_TABLES -DARM_FFT_ALLOW_TABLES \
 	  -DARM_TABLE_TWIDDLECOEF_F32_2048 -DARM_TABLE_BITREVIDX_FLT_2048 -DARM_TABLE_TWIDDLECOEF_RFFT_F32_4096
-# TODO explain
+# Recommended by CMSIS DSP for best performance (and from testing it does improve processing time considerably).
 CFLAGS += -Ofast
 
 # Objects local to the core lib.
