@@ -15,7 +15,7 @@ LDFLAGS += -march=armv7e-m+fp -mfloat-abi=hard
 # Link against libc for printf(). Libc provides the interface for syscalls like 
 # write() (used by printf()), but its implementation is provided by the OS (Linux), 
 # which isn't available here, so link against nosys to provide stub implementations 
-# for the functions we don't care about but are needed to compile.
+# for the functions we don't care about but are needed to link.
 LDLIBS = -lc -lnosys -lm
 
 objs = guitar_tuner.o ssd1306.o font.o debug.o
