@@ -6,8 +6,8 @@
 # Users of this lib must also link against libm.
 
 # Number of filter coefficients. See the gen_filter_coeffs.m script for more info.
-# The filtering is a huge bottleneck for the processing core on the pico, so this
-# can't be too high. 
+# The filtering can be a huge bottleneck for the processing, especially on an MCU
+# without a FPU such as the pico, so this can't be too high. 
 nr_taps = 128
 # See comment at ../include/dsp.h:OVERSAMPLING_RATE
 oversampling_rate = 4000
