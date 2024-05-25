@@ -1,3 +1,6 @@
+# Copyright (C) 2024 Petar Turukalo
+# SPDX-License-Identifier: GPL-2.0
+
 export cross_prefix = arm-none-eabi-
 export arm_arch_profile = M
 cpu = cortex-m4

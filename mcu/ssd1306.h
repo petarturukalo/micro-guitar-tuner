@@ -1,4 +1,7 @@
 /*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ *
  * Driver for the SSD1306 OLED display controller.
  */
 #ifndef SSD1306_H	

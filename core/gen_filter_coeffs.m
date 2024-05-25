@@ -1,5 +1,9 @@
+% Copyright (C) 2024 Petar Turukalo
+% SPDX-License-Identifier: GPL-2.0
+%
 % Generate coefficients for a brick wall band-pass filter for use by the 
 % CMSIS DSP arm_fir_init_*() functions. 
+
 pkg load signal
 
 if (nargin != 2)

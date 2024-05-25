@@ -1,3 +1,6 @@
+# Copyright (C) 2024 Petar Turukalo
+# SPDX-License-Identifier: GPL-2.0
+#
 # This makefile shouldn't be used directly, only invoked from a parent makefile 
 # which has a dependency on this core lib. To use it from such a parent makefile,
 # ensure to include compiler_vars.mk (see it for more info) and that variables 

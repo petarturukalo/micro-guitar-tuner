@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ */
 #include "dsp_indirect.h"
 #include "adc.h"
 #include "note.h"

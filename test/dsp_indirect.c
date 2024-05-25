@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ */
 #include "dsp_indirect.h"
 
 static void s16_array_to_f32(const int16_t *src, float32_t *dest, int len)

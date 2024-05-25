@@ -1,4 +1,7 @@
 /*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ *
  * Glyph bitmaps for the Source Code Pro (monospace) font.
  */
 #ifndef FONT_H

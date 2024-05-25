@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ */
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/adc.h>

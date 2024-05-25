@@ -1,4 +1,7 @@
 /*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ *
  * Operations on 2D bit arrays. 2D bit arrays are used rather than 2D byte
  * arrays in order to save space.
  */

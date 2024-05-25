@@ -1,4 +1,7 @@
 /*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ *
  * Some test sources include this to indirectly include dsp.h from 
  * the core library as they require the signed 16-bit integer version 
  * of samples_to_freq_bin_magnitudes().

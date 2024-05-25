@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ */
 #include "debug.h"
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/rcc.h>

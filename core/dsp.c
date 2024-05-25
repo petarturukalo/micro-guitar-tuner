@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ */
 #include <dsp/filtering_functions.h>
 #include <dsp/transform_functions.h>
 #include <dsp/complex_math_functions.h>

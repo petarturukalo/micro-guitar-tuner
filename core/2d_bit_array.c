@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ */
 #include "2d_bit_array.h"
 
 uint8_t bit_index_to_8bit_bitmask(int bit_index)

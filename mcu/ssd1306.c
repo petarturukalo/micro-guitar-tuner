@@ -1,4 +1,7 @@
 /*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ *
  * This source implements the Solomon Systech SSD1306 datasheet,
  * linked to in top-level README (TODO?).
  */

@@ -1,3 +1,6 @@
+# Copyright (C) 2024 Petar Turukalo
+# SPDX-License-Identifier: GPL-2.0
+
 export cross_prefix = arm-linux-gnueabihf-
 # Although the MCU is Cortex-M, emulate Cortex-A instead because these 
 # are user space applications which test non-MCU specific things, e.g. 

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2024 Petar Turukalo
+ * SPDX-License-Identifier: GPL-2.0
+ */
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>

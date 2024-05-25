@@ -1,3 +1,6 @@
+# Copyright (C) 2024 Petar Turukalo
+# SPDX-License-Identifier: GPL-2.0
+#
 # Set (implicit) compiler variables for (implicit) rules required to build 
 # objects for the core library, and objects dependent on it.
 #
