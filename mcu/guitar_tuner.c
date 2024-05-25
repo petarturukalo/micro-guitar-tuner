@@ -12,7 +12,7 @@
 #include "font.h"
 #include "debug.h"
 
-#define FRAME_LEN FRAME_LEN_4096
+#define FRAME_LEN  FRAME_LEN_4096
 /* The ADC regular data register data field is 16 bits wide, but the sample is 12 bits. */
 #define ADC_DR_DATA_MASK 0x00000fff
 

@@ -1,7 +1,3 @@
-/*
- * Note functions here which operate on samples or reference a sampling
- * rate assume the sampling rate is OVERSAMPLING_RATE.
- */
 #ifndef DSP_H
 #define DSP_H
 
@@ -15,11 +11,10 @@
  * at core/gen_filter_coeffs.m:lowpass_cutoff_freq as 1700 Hz, which twice of 
  * gives a 3400 Hz sampling rate. The actual sampling rate is a bit over this
  * (hence oversampling), to 1. reduce quantization noise / improve SNR, and 2. 
- * to meet a reasonable frequency/time resolution tradeoff when paired with
- * the MAX_FRAME_LEN.
+ * to meet a reasonable frequency/time resolution tradeoff (see explanation at bin_width()) 
+ * when paired with the frame length.
  * 
  * See also comments at '../core/note.c:note_freqs'.
- * TODO reword ending and ref frequency/time resolution stuff when implemented elsewhere
  */
 #define OVERSAMPLING_RATE  OVERSAMPLING_RATE_FROM_MAKEFILE
 
@@ -60,19 +55,19 @@ enum frame_length {
  * Note a band-pass filter is also applied, its low-pass (anti-aliasing) filter part 
  * done specifically to cut off frequencies above the Nyquist frequency and prevent
  * aliasing (see ../core/gen_filter_coeffs.m and OVERSAMPLING_RATE for more info). 
- *
- * TODO 
- * - as write up more source and things get documented elsewhere, add more here or
- *   move documentation it away wherever it's best suited. and use refs to defines
- *   where possible (as they too get added)
- * - explain resolution tradeoffs here or elsewhere? (probably elsewhere because this
- *   is getting verbose)
  */
 void samples_to_freq_bin_magnitudes_init(enum frame_length frame_len);
 float32_t *samples_to_freq_bin_magnitudes(const float32_t *samples, enum frame_length frame_len);
 
 int nr_bins(enum frame_length frame_len);
 int bandwidth(void);
+/*
+ * The bin width is dependent on the sampling rate and frame length: the larger the frame length
+ * is relative to the sampling rate, the smaller the bin width, and so the better the frequency 
+ * resolution. But this comes at the cost of time resolution, as now the frame takes longer to fill.
+ *
+ * Note this function assumes the sampling rate is OVERSAMPLING_RATE.
+ */
 float32_t bin_width(enum frame_length frame_len);
 /* Get the index of the bin which the frequency falls into. */
 int freq_to_bin_index(float32_t frequency, float32_t binwidth);
