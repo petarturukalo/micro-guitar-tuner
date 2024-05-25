@@ -5,7 +5,7 @@
 #include <arm_math_types.h>
 
 /*
- * The pico SDK adc_read() returns the voltage of the electrical
+ * The MCU ADC read function returns the voltage of the electrical
  * signal in range 0 to 3.3V encoded in a 12-bit ("unsigned") value. 
  * Convert this value to a 32-bit float storing a value in the range
  * of a signed 16-bit integer, the reason for this format being that
