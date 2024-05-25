@@ -74,18 +74,12 @@ int bandwidth(void)
 	return OVERSAMPLING_RATE/2;
 }
 
-int bin_width(enum frame_length frame_len)
+float32_t bin_width(enum frame_length frame_len)
 {
-	/*
-	 * Note the return is purposefully int here because the current combinations 
-	 * of OVERSAMPLING_RATE and frame lengths all have an integer bin width. 
-	 * If this changes in the future (e.g. because OVERSAMPLING_RATE was changed) 
-	 * then the types here may need to change to floating point.
-	 */
-	return bandwidth()/nr_bins(frame_len);
+	return bandwidth()/(float32_t)nr_bins(frame_len);
 }
 
-enum frame_length frame_length_from_bin_width(int binwidth)
+enum frame_length frame_length_from_bin_width(float32_t binwidth)
 {
 	enum frame_length frame_len = OVERSAMPLING_RATE/binwidth;
 
@@ -109,7 +103,7 @@ static int Round(float32_t n)
 	return fractional_part > 0.5 ? floored+1 : floored;
 }
 
-int freq_to_bin_index(float32_t frequency, int binwidth)
+int freq_to_bin_index(float32_t frequency, float32_t binwidth)
 {
 	/*
 	 * The calculation here to round to the nearest bin index comes from testing
@@ -120,7 +114,7 @@ int freq_to_bin_index(float32_t frequency, int binwidth)
 	return Round(frequency/binwidth);
 }
 
-float32_t bin_index_to_freq(int bin_index, int binwidth)
+float32_t bin_index_to_freq(int bin_index, float32_t binwidth)
 {
 	return bin_index*binwidth;
 }

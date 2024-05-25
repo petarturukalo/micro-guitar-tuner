@@ -14,10 +14,10 @@
  * to meet a reasonable frequency/time resolution tradeoff when paired with
  * the MAX_FRAME_LEN.
  * 
- * See also comments at 'note.c:note_freqs'.
+ * See also comments at '../core/note.c:note_freqs'.
  * TODO reword ending and ref frequency/time resolution stuff when implemented elsewhere
  */
-#define OVERSAMPLING_RATE 4096
+#define OVERSAMPLING_RATE  OVERSAMPLING_RATE_FROM_MAKEFILE
 
 /* Supported FFT frame lengths (number of samples in a frame). */
 enum frame_length {
@@ -53,7 +53,7 @@ enum frame_length {
  *
  * Note a band-pass filter is also applied, its low-pass (anti-aliasing) filter part 
  * done specifically to cut off frequencies above the Nyquist frequency and prevent
- * aliasing (see core/gen_filter_coeffs.m and OVERSAMPLING_RATE for more info). 
+ * aliasing (see ../core/gen_filter_coeffs.m and OVERSAMPLING_RATE for more info). 
  *
  * TODO 
  * - as write up more source and things get documented elsewhere, add more here or
@@ -70,11 +70,11 @@ float32_t *samples_to_freq_bin_magnitudes_s16(const int16_t *samples, enum frame
 
 int nr_bins(enum frame_length frame_len);
 int bandwidth(void);
-int bin_width(enum frame_length frame_len);
-enum frame_length frame_length_from_bin_width(int binwidth);  /* Return 0 on error. */
+float32_t bin_width(enum frame_length frame_len);
+enum frame_length frame_length_from_bin_width(float32_t binwidth);  /* Return 0 on error. */
 /* Get the index of the bin which the frequency falls into. */
-int freq_to_bin_index(float32_t frequency, int binwidth);
-float32_t bin_index_to_freq(int bin_index, int binwidth);
+int freq_to_bin_index(float32_t frequency, float32_t binwidth);
+float32_t bin_index_to_freq(int bin_index, float32_t binwidth);
 
 /* Number of harmonics can't be too high otherwise the new product value will overflow. */
 #define NHARMONICS 4

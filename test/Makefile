@@ -21,12 +21,13 @@ all: $(gen_plots_bin) $(assert_tests_bin)
 #
 # if changes to use q notation rather than f32 then might not need
 # logf anymore
+# TODO put input files $^ at separated by two spaces (for all bins)
 $(gen_plots_bin): $(gen_plot_objs) $(libcore)
-	$(CC) $^ -lm -o $@
+	$(CC) -o $@  $^ -lm
 
-# TODO where to put -lm? link on static too?
+# TODO ensure -lm linked static?
 $(assert_tests_bin): $(assert_tests_objs) $(libcore)
-	$(CC) $^ -lm -o $@
+	$(CC) -o $@  $^ -lm
 
 $(libcore):
 	$(MAKE) -C ../core 

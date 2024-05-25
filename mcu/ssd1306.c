@@ -2,30 +2,34 @@
  * This source implements the Solomon Systech SSD1306 datasheet,
  * linked to in top-level README (TODO?).
  */
-#include "ssd1306.h"
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/i2c.h>
 #include <stdint.h>
 #include <stddef.h>
-#include <hardware/gpio.h>
 #include <string.h>
+#include "ssd1306.h"
 #include "font.h"
 #include "2d_bit_array.h"
 
-/* TODO does using slower save power? */
-#define I2C_FAST_MODE_PLUS_MAX_HZ 1000000  /* 1 MHz. */
-
-static i2c_inst_t *ssd1306_i2c_controller;
+static uint32_t ssd1306_i2c_controller = I2C1;
 static enum ssd1306_i2c_slave_address ssd1306_addr;
 
-void ssd1306_init_i2c(i2c_inst_t *i2c_controller, uint i2c_sda_gpio, uint i2c_scl_gpio,
-		      enum ssd1306_i2c_slave_address addr)
+void ssd1306_init_i2c(enum ssd1306_i2c_slave_address addr)
 {
-	i2c_init(i2c_controller, I2C_FAST_MODE_PLUS_MAX_HZ);
-	gpio_set_function(i2c_sda_gpio, GPIO_FUNC_I2C);
-	gpio_set_function(i2c_scl_gpio, GPIO_FUNC_I2C);
-	gpio_pull_up(i2c_sda_gpio);
-	gpio_pull_up(i2c_scl_gpio);
+	rcc_periph_clock_enable(RCC_I2C1);
+	rcc_periph_clock_enable(RCC_GPIOB);
 
-	ssd1306_i2c_controller = i2c_controller;
+	/* Configure pin PB8 as I2C1_SCL and pin PB9 as I2C1_SDA. */
+	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO8|GPIO9);
+	gpio_set_af(GPIOB, GPIO_AF4, GPIO8|GPIO9);
+	gpio_set_output_options(GPIOB, GPIO_OTYPE_OD, GPIO_OSPEED_2MHZ, GPIO8|GPIO9);
+	gpio_set(GPIOB, GPIO8|GPIO9);
+	
+	/* TODO use lower clock_megahz param? */
+	i2c_set_speed(ssd1306_i2c_controller, i2c_speed_fm_400k, rcc_apb1_frequency/1e6);
+	i2c_peripheral_enable(ssd1306_i2c_controller);
+
 	ssd1306_addr = addr;
 }
 
@@ -60,7 +64,7 @@ static void _ssd1306_send_cmd(uint8_t cmd)
 	payload.ctl.continuation = CTL_CONTINUATION_INTERLEAVED;
 	payload.cmd = cmd;
 
-	i2c_write_blocking(ssd1306_i2c_controller, ssd1306_addr, (uint8_t *)&payload, sizeof(payload), false);
+	i2c_transfer7(ssd1306_i2c_controller, ssd1306_addr, (uint8_t *)&payload, sizeof(payload), NULL, 0);
 }
 
 enum ssd1306_cmd {
@@ -244,7 +248,7 @@ void ssd1306_fill_gddram(void)
 	payload.ctl.continuation = CTL_CONTINUATION_DATA;
 	gddram_mcu_buf_transpose(gddram_mcu_buf, payload.gddram_mcu_buf_transposed);
 
-	i2c_write_blocking(ssd1306_i2c_controller, ssd1306_addr, (uint8_t *)&payload, sizeof(payload), false);
+	i2c_transfer7(ssd1306_i2c_controller, ssd1306_addr, (uint8_t *)&payload, sizeof(payload), NULL, 0);
 }
 
 void gddram_mcu_buf_zero(void)

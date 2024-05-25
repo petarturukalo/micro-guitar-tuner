@@ -7,8 +7,10 @@
 # The filtering is a huge bottleneck for the processing core on the pico, so this
 # can't be too high. 
 nr_taps = 128
+# See comment at ../include/dsp.h:OVERSAMPLING_RATE
+oversampling_rate = 4000
 
-CFLAGS += -DNR_TAPS=$(nr_taps)
+CFLAGS += -DNR_TAPS=$(nr_taps) -DOVERSAMPLING_RATE_FROM_MAKEFILE=$(oversampling_rate)
 # Flags to enable 32-bit float real FFT, frame length 4096. 
 # See RFFT_FAST_<type>_<frame len> (e.g. RFFT_FAST_F32_4096) from CMSIS-DSP/Source/fft.cmake 
 # for the defines needed to use a real FFT of a particular data type and frame length.
@@ -50,13 +52,13 @@ $(libcore): $(objs)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 filter_coeffs.c: print_filter_coeffs.m gen_filter_coeffs.m
-	octave print_filter_coeffs.m $(nr_taps) > $@
+	octave print_filter_coeffs.m $(oversampling_rate) $(nr_taps) > $@
 
 clean:
 	rm $(objs) filter_coeffs.c $(libcore)
 
 plot-filter-coeffs: plot_filter_coeffs.m gen_filter_coeffs.m
-	octave plot_filter_coeffs.m $(nr_taps)
+	octave plot_filter_coeffs.m $(oversampling_rate) $(nr_taps)
 
 # TODO
 # - document plot-filter-coeffs in a readme that it's to visualise the filter

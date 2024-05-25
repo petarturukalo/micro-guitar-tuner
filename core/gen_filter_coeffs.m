@@ -2,11 +2,11 @@
 % CMSIS DSP arm_fir_init_*() functions. 
 pkg load signal
 
-if (nargin != 1)
-	error("Expected 1 arg number of taps/coefficients")
+if (nargin != 2)
+	error("Expected 2 args oversampling rate and number of taps/coefficients")
 endif
 
-oversampling_rate = 4096;
+oversampling_rate = str2num(argv{1});
 % Filter out some of the low frequency noise and frequencies less than
 % the lowest note C0. Ideally want a very sharp slope at ~16 Hz but the 
 % order required for it is too high and makes the performance unusable
@@ -18,7 +18,7 @@ lowpass_cutoff_freq = 1700;
 % The higher the order the steeper the cutoff slope (and the closer it is
 % to a brick wall filter), but also the more coefficients and memory required 
 % to store them and time spent to process them. 
-order = str2num(argv{1})-1;
+order = str2num(argv{2})-1;
 
 coeffs = fir1(order, [highpass_cutoff_freq/(oversampling_rate/2), 
                       lowpass_cutoff_freq/(oversampling_rate/2)], "bandpass");
@@ -26,6 +26,5 @@ coeffs = fir1(order, [highpass_cutoff_freq/(oversampling_rate/2),
 coeffs = single(coeffs);
 
 % TODO
-% - share oversampling_rate with def in dsp.h? (struggled to cleanly)
-% -- same goes for repeated documentation?
+% - don't repeat documentation? or doesn't matter
 % - ref somewhere else for note limits?

@@ -1,118 +1,136 @@
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/adc.h>
+#include <libopencm3/stm32/timer.h>
+#include <libopencm3/stm32/f4/nvic.h>
+#include <libopencm3/cm3/cortex.h>
 #include <stdio.h>
-#include <string.h>
-#include <pico/stdio_usb.h>
-#include <pico/time.h>/* TODO rm? */
-#include <hardware/adc.h>
-#include <hardware/i2c.h>
-#include <pico/multicore.h>
 #include "adc.h"
 #include "dsp.h"
 #include "note.h"
 #include "ssd1306.h"
 #include "font.h"
-#include "power.h"
+#include "debug.h"
 
 #define FRAME_LEN FRAME_LEN_4096
-
-/* Pin number of GPIO which ADC0 uses. */
-#define ADC0_GPIO_PIN 26
-#define ADC0_CHANNEL 0
-/* Hz rate of the clock driving the ADC. */
-#define ADC_CLK_RATE_HZ 48000000
-
-static void adc_set_sampling_rate(int sampling_rate)
-{
-	/*
-	 * The ADC has a max sampling rate of 500 ksps, which is only 
-	 * the case because it is driven by a clock of rate ADC_CLK_RATE_HZ
-	 * and capturing a sample (the sample period) takes 96 clock cycles: 
-	 * ADC_CLK_RATE_HZ / 96 = 500 ksps.
-	 *
-	 * Setting a clock divider (clkdiv) with adc_set_clkdiv() changes the sample 
-	 * period from 96 clock cycles to clkdiv + 1 clock cycles. Thus in general the
-	 * sampling rate is calculated as ADC_CLK_RATE_HZ/(clkdiv+1) = sampling_rate.
-	 * This equation is rearranged to calculate clkdiv from sampling_rate.
-	 */
-	float clkdiv = ADC_CLK_RATE_HZ/sampling_rate - 1;
-	adc_set_clkdiv(clkdiv);
-}
+/* The ADC regular data register data field is 16 bits wide, but the sample is 12 bits. */
+#define ADC_DR_DATA_MASK 0x00000fff
 
 /*
- * This is a circular buffer storing 2 frames worth of samples so that the sampling core 
- * can fill up the next frame while the processing core processes the full frame.
+ * This is a circular buffer storing 2 frames worth of samples so that one frame can
+ * be filled while the other full frame is being processed.
  */
 static volatile float32_t samples[FRAME_LEN*2];
+static volatile float32_t *volatile full_samples_frame = NULL;
 
 /*
- * Store a sample in the next free slot in the samples circular buffer. Signal to the 
- * proessing core when a frame of samples has been filled so it can process them.
+ * Store the converted sample in the next free slot in the samples circular buffer. 
+ *
+ * When a frame has been filled full_samples_frame is set to the first sample in the
+ * filled frame, signalling that the frame is ready for processing (see processing_start()).
  */
-static void adc_isr(void) 
+void adc_isr(void) 
 {
 	static int i = 0;
 
-	/* Call to adc_fifo_get() will drain the FIFO and clear the interrupt. */
-	samples[i++] = convert_adc_u12_sample_to_s16(adc_fifo_get()&ADC_FIFO_VAL_BITS);
+	samples[i++] = convert_adc_u12_sample_to_s16(adc_read_regular(ADC1)&ADC_DR_DATA_MASK);
 
-	/* 
-	 * If just finished filling a frame of samples.
-	 *
-	 * Note variable i will never be 0 because of the i++ so 0%FRAME_LEN == 0 (true)
-	 * will never accidentally enter this block.
-	 */
+	/* If just finished filling a frame of samples. */
 	if (i%FRAME_LEN == 0) {
-		/* Send start index of frame to processing core. */
-		multicore_fifo_push_blocking(i-FRAME_LEN);
+		full_samples_frame = samples+(i-FRAME_LEN);
 		if (i == FRAME_LEN*2)
 			i = 0;
 	}
 }
 
-/*
- * Initialise the sampler to read samples from pin ADC0 at the
- * given sampling rate. Call sampler_start() to start sampling.
- * 
- * Samples are captured in interrupt driven free-running sampling mode,
- * which utilises hardware timing to achieve the sampling rate. 
- * This very precise timing is needed otherwise the signal may not be
- * restored accurately.
- *
- * WARNING do not use sampling rates less than ~750 because from testing
- * they do not work as intended and give a spurious sampling rate.
- */
-static void sampler_init(int sampling_rate)
+/* Set timer 2 (TIM2) sampling rate to OVERSAMPLING_RATE. */
+static void timer2_set_sampling_rate(void)
 {
-	adc_init();
-	/* Configure ADC to read from the ADC0 pin. */
-	adc_gpio_init(ADC0_GPIO_PIN);
-	adc_select_input(ADC0_CHANNEL);
+	/*
+	 * The timer is running off APB1, which is 48 MHz, but because the APB1 prescaler is > 1,
+	 * the timer clock frequencies are twice APB1, which is 96 MHz. This clock divider sets
+	 * the counter clock frequency to twice the OVERSAMPLING_RATE (i.e. 96 MHz / clock_div = 2*OVERSAMPLING_RATE),
+	 * because it takes a clock cycle to count from 0 to 1, and another clock cycle to overflow 
+	 * from 1 back to 0: each update event takes 2 cycles, so with a clock rate of 2*OVERSAMPLING_RATE 
+	 * there will be OVERSAMPLING_RATE update events. 
+	 *
+	 * Note also the counter clock is lowered rather than raising the timer period in order to save power.
+	 */
+	const int clock_div = 12000;
+	timer_set_prescaler(TIM2, clock_div-1);
+	timer_set_period(TIM2, 1);
 
-	adc_set_sampling_rate(sampling_rate);
-	adc_fifo_setup(true, 
-		       false,	/* Only for DMA. */
-		       1,	/* Have IRQ trigger for each sample. */
-		       false,
-		       false);	/* Only for DMA. */
-
-	irq_set_exclusive_handler(ADC_IRQ_FIFO, adc_isr);
-	/* Enable the ADC0 interrupt in the NVIC interrupt controller. */
-	irq_set_enabled(ADC_IRQ_FIFO, true);
-
-	adc_irq_set_enabled(true);
+	/* Trigger update event to load "preload" prescaler value set above into preload register proper. */
+	timer_generate_event(TIM2, TIM_EGR_UG);
+	timer_clear_flag(TIM2, TIM_EGR_UG);
 }
 
 /*
- * Spin waiting to service ADC interrupts with adc_isr(). See also sampler_init().
+ * Configure timer 2 (TIM2) to send an update event as trigger output (TRGO) at a sampling rate of OVERSAMPLING_RATE.
+ */
+static void timer_init(void)
+{
+	rcc_periph_clock_enable(RCC_TIM2);
+
+	/* Below 2 lines put the timer in upcounting mode. */
+	timer_set_alignment(TIM2, TIM_CR1_CMS_EDGE);
+	timer_direction_up(TIM2);
+	/* Generate an update event when timer upcounts from 0 to the period set with timer_set_period(). */
+	timer_update_on_overflow(TIM2);
+	timer_enable_update_event(TIM2);
+	/* Send update event as trigger output (TRGO).  */
+	timer_set_master_mode(TIM2, TIM_CR2_MMS_UPDATE);
+	timer2_set_sampling_rate();
+}
+
+/*
+ * Initialise the ADC to do a single conversion on regular channel ADC1 (pin PA1) when externally
+ * triggered by the timer 2 (TIM2) trigger output (TRGO). End of conversion interrupt is enabled
+ * and handled by adc_isr(). 
+ */
+static void adc_init(void)
+{
+	const uint8_t adc_channel = 1;
+
+	rcc_periph_clock_enable(RCC_GPIOA);
+	rcc_periph_clock_enable(RCC_ADC1);
+
+	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO1);
+
+	adc_set_clk_prescale(ADC_CCR_ADCPRE_BY8);  /* Use slowest clock to save power. */
+	adc_set_resolution(ADC1, ADC_CR1_RES_12BIT);
+	adc_set_single_conversion_mode(ADC1);
+	adc_set_regular_sequence(ADC1, 1, (uint8_t *)&adc_channel);
+	adc_enable_eoc_interrupt(ADC1);
+	nvic_enable_irq(NVIC_ADC_IRQ);
+	adc_enable_external_trigger_regular(ADC1, ADC_CR2_EXTSEL_TIM2_TRGO, ADC_CR2_EXTEN_RISING_EDGE);
+
+	adc_power_on(ADC1);
+}
+
+/*
+ * Initialise the sampler to sample at an OVERSAMPLING_RATE sampling rate.
+ * Call sampler_start() to start sampling.
+ *
+ * Hardware timing is used to achieve the sampling rate, with a timer driving 
+ * the ADC rather than setting up the ADC in continuous mode because its choice of
+ * sampling rate is more flexible. The very precise timing provided by hardware timing 
+ * is needed, e.g. over manually starting a conversion and then sleeping in a loop, 
+ * otherwise the signal may not be restored accurately. 
+ */
+static void sampler_init(void)
+{
+	timer_init();
+	adc_init();
+}
+
+/* 
+ * Start the sampler initialised in sampler_init(), which will start the triggering
+ * of ADC interrupts and servicing of them with adc_isr().
  */
 static void sampler_start(void)
 {
-	/* Synchronise with the processing core, waiting for it to finish its initialisation. */
-	multicore_fifo_push_blocking(0);
-
-	adc_run(true);
-
-	for (;;)
-		__wfi();
+	timer_enable_counter(TIM2);
 }
 
 /*
@@ -147,8 +165,7 @@ static void display_note_and_slider(float32_t frequency)
 
 	if (!nf) 
 		nf = &null_nf;
-	/* TODO rm */
-	printf("note = %s, ref = %.3f, actual = %.3f\n", nf->note_name, nf->frequency, frequency);
+	printf("note name = %s, note freq = %.3f, detect freq = %.3f\n", nf->note_name, nf->frequency, frequency);
 	gddram_mcu_buf_zero();
 
 	/* Draw note name text. */
@@ -172,68 +189,86 @@ static void display_note_and_slider(float32_t frequency)
 	ssd1306_fill_gddram();
 }
 
-/* TODO timing. need to finish processing before sampling core catches back up */
-static void processing_core(void)
+static void processing_init(void)
 {
-	int frame_start_index;
-	float32_t *framed_samples, *freq_bin_magnitudes;
+	counter_init();
+	samples_to_freq_bin_magnitudes_init(FRAME_LEN);
+	ssd1306_init_i2c(SSD1306_I2C_SLAVE_ADDR_LOW);
+	ssd1306_init();
+	/* Show a question mark while the very first frame of samples is being collected. */
+	display_note_and_slider(0);
+}
+
+/*
+ * Continuously wait for a frame of samples to be filled, then processing the full frame for
+ * a detected closest note and showing it on the display.
+ */
+static void processing_start(void)
+{
+	float32_t *freq_bin_magnitudes;
 	int max_bin_ind;
 	float32_t frequency; 
-
-	power_save_enable_core_deep_sleep();
-	samples_to_freq_bin_magnitudes_init(FRAME_LEN);
-	ssd1306_init_i2c(i2c0, 12, 13, SSD1306_I2C_SLAVE_ADDR_LOW);
-	ssd1306_init();
-	/* Show a question mark. */
-	display_note_and_slider(0);
-
-	/* Synchronise with the sampling core, waiting for it to finish its initialisation. */
-	multicore_fifo_pop_blocking();
-
+	// TODO rm?
+	uint32_t prev_proc_start, proc_start, proc_end; 
+	
+	proc_start = counter_count();
 	for (;;) {
-		absolute_time_t start2 = get_absolute_time();//TODO rm
+		/* Wait for sampler to fill frame. See adc_isr(). */
+		do {
+			__asm__("wfi");
+		} while (!full_samples_frame);
 
-		/* Wait for sampling core to finish filling a frame. */
-		frame_start_index = multicore_fifo_pop_blocking();
-		framed_samples = samples + frame_start_index;
+		/* TODO turn on stuff used by processing (don't need to turn on in processing_init() anymore)*/
 
-		absolute_time_t start = get_absolute_time();//TODO rm
+		prev_proc_start = proc_start;
+		proc_start = counter_count();
 
 		/* DSP. */
-		freq_bin_magnitudes = samples_to_freq_bin_magnitudes_f32(framed_samples, FRAME_LEN);
+		freq_bin_magnitudes = samples_to_freq_bin_magnitudes_f32((const float32_t *)full_samples_frame, FRAME_LEN);
 		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN);
 		max_bin_ind = max_bin_index(freq_bin_magnitudes, FRAME_LEN);
 		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN));
 
+		proc_end = counter_count();
+
 		printf("max mag %e, ", freq_bin_magnitudes[max_bin_ind]);
-		display_note_and_slider(frequency);
-		absolute_time_t now = get_absolute_time();
-		printf("time %llu/%llu\n", absolute_time_diff_us(start, now),
-					   absolute_time_diff_us(start2, now));//TODO rm
+		printf("frame fill time = %d, proc time = %d\n", proc_start-prev_proc_start, proc_end-proc_start);
 		/* 
-		 * TODO don't report note if it's too quiet? so don't get spurious results 
-		 * when nothing playing. try out by printing max value of mag
+		 * TODO show question mark if max mag under thresh (+17,+18, etc.). when do so make display_note_and_slider(0)
+		 * call in processing_init() a function called something like display_question_mark()
 		 */
+		display_note_and_slider(frequency);
+
+		/* TODO turn off stuff used by processing */
+
+		full_samples_frame = NULL;
 	}
 }
 
 /*
- * There are two cores: a sampling core and a processing core. The sampling core stores samples
- * in the global samples buffer, signalling to the processing core when it has filled a frame,
- * for the processing core to then process the samples for a detected closest note and show the 
- * result on the display.
+ * TODO
+ * - rm printfs?
+ * - lower APB1 and APB2 clocks as low as I can? APB1 as low as it needs to go to implement the sampling rate?
+ * - use a lower MHz sysclk/ah/apbx with rcc_clock_setup_pll(). try making my own config if need be? use as low
+ *   a clock as needed to save power
+ * - need to enable peripheral clocks in low power mode
  */
 int main(void)
 {
-	stdio_usb_init();/*TODO for one core? both? none?*/
-	power_save_configure_clocks();
+	/*
+	 * Sysclk runs off HSI at reset. Switch sysclk to run off HSE via a PLL, and turn 
+	 * off HSI. HSE because it's more stable/accurate than HSI, preferred for the ADC, 
+	 * and boosted by a PLL for a higher frequency needed for processing samples.
+	 */
+	rcc_clock_setup_pll(&rcc_hse_25mhz_3v3[RCC_CLOCK_3V3_96MHZ]);  /* HSE on my board is 25 MHz. */
+	/* Peripheral clocks must be enabled after this point. */
 
-	multicore_launch_core1(processing_core);
+	uart_init();
+	cm_enable_interrupts();
 
-	/* Core 0 (this core) is the sampling core. */
-
-	power_save_enable_core_deep_sleep();
-	sampler_init(OVERSAMPLING_RATE);
+	sampler_init();
+	processing_init();
 	sampler_start();
+	processing_start();
 }
 

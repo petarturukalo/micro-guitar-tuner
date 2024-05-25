@@ -14,20 +14,20 @@
 static void plot_magnitudes(FILE *gnuplot, float32_t *freq_bin_magnitudes, enum frame_length frame_len)
 {
 	const int nbins = nr_bins(frame_len);
-	const int binwidth = bin_width(frame_len);
+	const float32_t binwidth = bin_width(frame_len);
 	float bin_centre_xpos = binwidth/2;
 
 	fprintf(gnuplot, "set key noautotitle\n");  /* Remove default keyentry. */
-	fprintf(gnuplot, "set key inside right top offset -5,0\n");
+	fprintf(gnuplot, "set key inside right top offset -7,0\n");
 
 	fprintf(gnuplot, "plot '-' with boxes, ");
 	/* Add keyentries for metadata. */
 	fprintf(gnuplot, "keyentry 'frame len %d', ", frame_len);
 	fprintf(gnuplot, "keyentry 'nbins %d', ", nbins);
-	fprintf(gnuplot, "keyentry 'bin width %d Hz'\n", binwidth);
+	fprintf(gnuplot, "keyentry 'bin width %.3f Hz'\n", binwidth);
 	/* Plot magnitudes. Start at 1 to skip DC. */
 	for (int i = 1; i < nbins; ++i) {
-		fprintf(gnuplot, "%.1f %a\n", bin_centre_xpos, freq_bin_magnitudes[i]);
+		fprintf(gnuplot, "%.4f %a\n", bin_centre_xpos, freq_bin_magnitudes[i]);
 		bin_centre_xpos += binwidth;
 	}
 	fprintf(gnuplot, "e\n");

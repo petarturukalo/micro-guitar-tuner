@@ -4,7 +4,6 @@
 #ifndef SSD1306_H	
 #define SSD1306_H	
 
-#include <hardware/i2c.h>
 #include "2d_bit_array.h"
 
 #define GDDRAM_PIXEL_WIDTH 128
@@ -22,14 +21,13 @@ enum ssd1306_i2c_slave_address {
 
 /*
  * The SSD1306 controller on my display interfaces with the MCU via I2C. 
- * Initialise an I2C controller to use the given GPIO pins for I2C communication
- * with the SSD1306.
+ * Initialise I2C controller I2C1 to use pins PB8 as I2C1_SCL and PB9 as 
+ * I2C1_SDA for I2C communication with the SSD1306.
  *
  * @addr: which address to use will typically be detailed on the retailer's product page for the 
  *	  display bought
  */
-void ssd1306_init_i2c(i2c_inst_t *i2c_controller, uint i2c_sda_gpio, uint i2c_scl_gpio, 
-		      enum ssd1306_i2c_slave_address addr);
+void ssd1306_init_i2c(enum ssd1306_i2c_slave_address addr);
 /* 
  * Initialise the SSD1306 controller and power on the display proper. 
  * Ensure to call ssd1306_init_i2c() before this.
