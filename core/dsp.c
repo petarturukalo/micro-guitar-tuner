@@ -120,12 +120,6 @@ void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length
 	}
 }
 
-/* 
- * Wrapper for arm_max_f32() so 1. user of this lib doesn't have to write their own max 
- * function, and 2. to reuse arm_max_f32() internally and not prompt user to call arm_max_f32() 
- * directly when looking to not write their own max function because the CMSIS DSP object files 
- * are internal to this lib.
- */
 int max_bin_index(float32_t *freq_bin_magnitudes, enum frame_length frame_len)
 {
 	float32_t max;
