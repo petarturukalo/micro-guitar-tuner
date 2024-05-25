@@ -56,20 +56,6 @@ float32_t bin_width(enum frame_length frame_len)
 	return bandwidth()/(float32_t)nr_bins(frame_len);
 }
 
-/* 
- * Round a floating point number to the nearest integer. 
- * If half way between then rounds down.
- */
-static int Round(float32_t n)
-{
-	int floored = n/1;
-	float32_t fractional_part = n - floored;
-
-	if (fractional_part == 0.5) 
-		return floored;
-	return fractional_part > 0.5 ? floored+1 : floored;
-}
-
 int freq_to_bin_index(float32_t frequency, float32_t binwidth)
 {
 	/*
@@ -78,7 +64,7 @@ int freq_to_bin_index(float32_t frequency, float32_t binwidth)
 	 * See assert_sine_wave_freq_to_bin_index() for these tests (see also the sine wave 
 	 * data that it tests on).
 	 */
-	return Round(frequency/binwidth);
+	return round(frequency/binwidth);
 }
 
 float32_t bin_index_to_freq(int bin_index, float32_t binwidth)

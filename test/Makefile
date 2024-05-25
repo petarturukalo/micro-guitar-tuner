@@ -16,17 +16,9 @@ libcore = ../core/libcore-A.a
 
 all: $(gen_plots_bin) $(assert_tests_bin)
 
-# TODO -lm only here because logf needed by arm_vlog_f32.
-# make sure it's statically linked and if end up needing to
-# link against math lib then mention it somewhere in core makefile?
-#
-# if changes to use q notation rather than f32 then might not need
-# logf anymore
-# TODO put input files $^ at separated by two spaces (for all bins)
 $(gen_plots_bin): $(gen_plot_objs) $(libcore)
 	$(CC) -o $@  $^ -lm
 
-# TODO ensure -lm linked static?
 $(assert_tests_bin): $(assert_tests_objs) $(libcore)
 	$(CC) -o $@  $^ -lm
 

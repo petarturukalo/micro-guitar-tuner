@@ -2,6 +2,8 @@
 # which has a dependency on this core lib. To use it from such a parent makefile,
 # ensure to include compiler_vars.mk (see it for more info) and that variables 
 # arm_arch_profile and cross_prefix are exported (the latter only if cross compiling).
+#
+# Users of this lib must also link against libm.
 
 # Number of filter coefficients. See the gen_filter_coeffs.m script for more info.
 # The filtering is a huge bottleneck for the processing core on the pico, so this
