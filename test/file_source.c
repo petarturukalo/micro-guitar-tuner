@@ -1,4 +1,3 @@
-/* TODO gnuradio depends on libsndfile for this sort of thing? */
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -12,7 +11,6 @@
 #include <libgen.h>
 #include "file_source.h"
 
-/* TODO don't reinvent the wheel for tests. use c++? */
 static bool str_has_suffix(const char *str, const char *suffix)
 {
 	int i, j;
