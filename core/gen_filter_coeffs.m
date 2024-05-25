@@ -25,6 +25,3 @@ coeffs = fir1(order, [highpass_cutoff_freq/(oversampling_rate/2),
 % Convert to 32-bit float.
 coeffs = single(coeffs);
 
-% TODO
-% - don't repeat documentation? or doesn't matter
-% - ref somewhere else for note limits?
