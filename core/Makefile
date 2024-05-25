@@ -18,7 +18,6 @@ CFLAGS += -DNR_TAPS=$(nr_taps) -DOVERSAMPLING_RATE_FROM_MAKEFILE=$(oversampling_
 # for the defines needed to use a real FFT of a particular data type and frame length.
 # Only define exactly what's needed as each real FFT type uses its own tables which
 # take up a lot of memory and will bloat the final executable.
-# TODO enable frame len 2048?
 CFLAGS += -DARM_DSP_CONFIG_TABLES -DARM_FFT_ALLOW_TABLES \
 	  -DARM_TABLE_TWIDDLECOEF_F32_2048 -DARM_TABLE_BITREVIDX_FLT_2048 -DARM_TABLE_TWIDDLECOEF_RFFT_F32_4096
 # TODO explain
@@ -27,7 +26,6 @@ CFLAGS += -Ofast
 # Objects local to the core lib.
 objs = dsp.o note.o adc.o filter_coeffs.o 2d_bit_array.o
 # Dependent CMSIS DSP objects.
-# TODO better way to do this? maybe CMSIS DSP provides a cmake interface?
 objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
 	../CMSIS-DSP/Source/FilteringFunctions/arm_fir_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_rfft_fast_init_f32.o \
