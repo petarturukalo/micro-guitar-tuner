@@ -191,22 +191,12 @@ static void test_bit_array_2d_copy(void)
 					      0b11100000,0b00000001,0b10000000 });
 }
 
-/* TODO explain (running assert tests) */
 int main(void)
 {
-	/* TODO fix up whitespace */
-
-	/* TODO not currently linking against RFFT frame len 2048 tables */
-	/*for_each_sine_file_source(FRAME_LEN_2048, assert_sine_wave_freq_to_bin_index);*/
 	for_each_sine_file_source(FRAME_LEN_4096, assert_sine_wave_freq_to_bin_index);
-
 	test_hps_find_harmonic_peaks();
-
-	/* TODO test other frame lens :(. or not anymore? */
 	for_each_note_file_source(FRAME_LEN_4096, assert_hps);
-
 	test_cents_difference();
-
 	test_convert_adc_u12_sample_to_s16();
 	test_bit_array_2d_copy();
 
