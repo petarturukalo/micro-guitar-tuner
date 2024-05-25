@@ -29,7 +29,14 @@ float32_t lowest_note_frequency(void);
  * A cent is one one hundredth of the difference between two adjacent notes a
  * semitone apart; the difference between two adjacent notes is CENTS_IN_SEMITONE cents. 
  *
- * TODO explain log scale, etc?
+ * Why difference in cents is used (over, say, difference in frequency): the pitch 
+ * of a note is our perception of its frequency. The pitch of the same note an octave 
+ * higher is at twice the frequency of the initial note; thus this perception is base-2 
+ * logarithmic. This means the difference in frequency between any two notes that we 
+ * perceive to be the same distance apart as another two notes, isn't necessarily the 
+ * same distance in frequency. So cents is used because the difference in cents reflects
+ * our perception.
+ *
  * TODO reference this function was taken from the digital audio with java book
  */
 int cents_difference(float32_t frequency, struct note_freq *reference);
