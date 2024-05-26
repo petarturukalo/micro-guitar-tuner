@@ -51,16 +51,16 @@ void adc_isr(void)
 static void timer2_set_sampling_rate(void)
 {
 	/*
-	 * The timer is running off APB1, which is 48 MHz, but because the APB1 prescaler is > 1,
-	 * the timer clock frequencies are twice APB1, which is 96 MHz. This clock divider sets
-	 * the counter clock frequency to twice the OVERSAMPLING_RATE (i.e. 96 MHz / clock_div = 2*OVERSAMPLING_RATE),
+	 * The timer is running off APB1, which is 6 MHz, but because the APB1 prescaler is > 1,
+	 * the timer clock frequencies are twice APB1, which is 12 MHz. This clock divider sets
+	 * the counter clock frequency to twice the OVERSAMPLING_RATE (i.e. 12 MHz / clock_div = 2*OVERSAMPLING_RATE),
 	 * because it takes a clock cycle to count from 0 to 1, and another clock cycle to overflow 
 	 * from 1 back to 0: each update event takes 2 cycles, so with a clock rate of 2*OVERSAMPLING_RATE 
 	 * there will be OVERSAMPLING_RATE update events. 
 	 *
 	 * Note also the counter clock is lowered rather than raising the timer period in order to save power.
 	 */
-	const int clock_div = 12000;
+	const int clock_div = 1500;
 	timer_set_prescaler(TIM2, clock_div-1);
 	timer_set_period(TIM2, 1);
 
@@ -241,37 +241,35 @@ static void processing_start(void)
 
 		/* TODO turn off stuff used by processing */
 
-		// TODO this should include time to display?
 		proc_end = counter_count();
 		printf("max mag %e, ", freq_bin_magnitudes[max_bin_ind]);
 		printf("frame fill time = %d, proc time = %d\n", proc_start-prev_proc_start, proc_end-proc_start);
-
 
 		full_samples_frame = NULL;
 	}
 }
 
-/*
- * TODO
- * - rm printfs?
- * - lower APB1 and APB2 clocks as low as I can? APB1 as low as it needs to go to implement the sampling rate?
- * - use a lower MHz sysclk/ah/apbx with rcc_clock_setup_pll(). try making my own config if need be? use as low
- *   a clock as needed to save power
- * - need to enable peripheral clocks in low power mode
- */
 int main(void)
 {
 	/*
-	 * Sysclk runs off HSI at reset. Switch sysclk to run off HSE via a PLL, and turn 
-	 * off HSI. HSE because it's more stable/accurate than HSI, preferred for the ADC, 
-	 * and boosted by a PLL for a higher frequency needed for processing samples.
+	 * Sysclk runs off HSI at reset. Switch sysclk to run off the 25 MHz HSE on my board
+	 * boosted to 96 MHz via a PLL, and turn off HSI. HSE because it's more stable/accurate 
+	 * than HSI, preferred for the ADC, and boosted by a PLL for a higher frequency needed 
+	 * for processing samples.
 	 */
-	rcc_clock_setup_pll(&rcc_hse_25mhz_3v3[RCC_CLOCK_3V3_96MHZ]);  /* HSE on my board is 25 MHz. */
+	struct rcc_clock_scale rcc_hse_25mhz_3v3_copy = rcc_hse_25mhz_3v3[RCC_CLOCK_3V3_96MHZ];
+
+	/* Use slowest APB clocks to save power. */
+	rcc_hse_25mhz_3v3_copy.ppre1 = RCC_CFGR_PPRE_DIV_16;
+	rcc_hse_25mhz_3v3_copy.ppre2 = RCC_CFGR_PPRE_DIV_16;
+	rcc_hse_25mhz_3v3_copy.apb1_frequency = 6000000;
+	rcc_hse_25mhz_3v3_copy.apb2_frequency = 6000000;
+
+	rcc_clock_setup_pll(&rcc_hse_25mhz_3v3_copy);
 	/* Peripheral clocks must be enabled after this point. */
 
 	uart_init();
 	cm_enable_interrupts();
-
 	sampler_init();
 	processing_init();
 	sampler_start();
