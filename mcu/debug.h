@@ -12,7 +12,7 @@
  * for debugging). Turn this off when not debugging becuase their initialised
  * clocks waste power.
  */
-#define ENABLE_DEBUG 1
+#define ENABLE_DEBUG 0
 
 /*
  * Initialise 115,200 8N1 UART transfer on pin PB6, USART1_TX.
