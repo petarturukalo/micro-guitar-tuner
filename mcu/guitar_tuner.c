@@ -222,10 +222,10 @@ static void processing_start(void)
 			__asm__("wfi");
 		} while (!full_samples_frame);
 
-		/* TODO turn on stuff used by processing (don't need to turn on in processing_init() anymore)*/
-
 		prev_proc_start = proc_start;
 		proc_start = counter_count();
+
+		/* TODO turn on stuff used by processing (don't need to turn on in processing_init() anymore)*/
 
 		/* DSP. */
 		freq_bin_magnitudes = samples_to_freq_bin_magnitudes((const float32_t *)full_samples_frame, FRAME_LEN);
@@ -233,10 +233,6 @@ static void processing_start(void)
 		max_bin_ind = max_bin_index(freq_bin_magnitudes, FRAME_LEN);
 		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN));
 
-		proc_end = counter_count();
-
-		printf("max mag %e, ", freq_bin_magnitudes[max_bin_ind]);
-		printf("frame fill time = %d, proc time = %d\n", proc_start-prev_proc_start, proc_end-proc_start);
 		/* 
 		 * TODO show question mark if max mag under thresh (+17,+18, etc.). when do so make display_note_and_slider(0)
 		 * call in processing_init() a function called something like display_question_mark()
@@ -244,6 +240,12 @@ static void processing_start(void)
 		display_note_and_slider(frequency);
 
 		/* TODO turn off stuff used by processing */
+
+		// TODO this should include time to display?
+		proc_end = counter_count();
+		printf("max mag %e, ", freq_bin_magnitudes[max_bin_ind]);
+		printf("frame fill time = %d, proc time = %d\n", proc_start-prev_proc_start, proc_end-proc_start);
+
 
 		full_samples_frame = NULL;
 	}
