@@ -268,6 +268,13 @@ int main(void)
 	rcc_clock_setup_pll(&rcc_hse_25mhz_3v3_copy);
 	/* Peripheral clocks must be enabled after this point. */
 
+	/*
+	 * Disable display peripheral clocks during sleep mode because they're
+	 * only needed when processing.
+	 */
+	RCC_AHB1LPENR &= ~RCC_AHB1LPENR_GPIOBLPEN;
+	RCC_APB1LPENR &= ~RCC_APB1LPENR_I2C1LPEN;
+
 	uart_init();
 	cm_enable_interrupts();
 	sampler_init();
