@@ -169,7 +169,6 @@ static void display_note_and_slider(float32_t frequency)
 
 	if (!nf) 
 		nf = &null_nf;
-	printf("note name = %s, note freq = %.3f, detect freq = %.3f\n", nf->note_name, nf->frequency, frequency);
 	gddram_mcu_buf_zero();
 
 	/* Draw note name text. */
@@ -219,17 +218,12 @@ static void processing_start(void)
 	float32_t *freq_bin_magnitudes;
 	int max_bin_ind;
 	float32_t frequency; 
-	uint32_t prev_proc_start, proc_start, proc_end; 
 	
-	proc_start = counter_count();
 	for (;;) {
 		/* Wait for sampler to fill frame. See adc_isr(). */
 		do {
 			__asm__("wfi");
 		} while (!full_samples_frame);
-
-		prev_proc_start = proc_start;
-		proc_start = counter_count();
 
 		/* DSP. */
 		freq_bin_magnitudes = samples_to_freq_bin_magnitudes((const float32_t *)full_samples_frame, FRAME_LEN);
@@ -250,10 +244,6 @@ static void processing_start(void)
 			display_note_and_slider(frequency);
 		else
 			display_question_mark();
-
-		proc_end = counter_count();
-		printf("max mag %e, ", freq_bin_magnitudes[max_bin_ind]);
-		printf("frame fill time = %d, proc time = %d\n", proc_start-prev_proc_start, proc_end-proc_start);
 
 		full_samples_frame = NULL;
 	}
@@ -291,5 +281,7 @@ int main(void)
 	processing_init();
 	sampler_start();
 	processing_start();
+
+	printf("this call to printf() is never reached but it's needed to link\n");
 }
 
