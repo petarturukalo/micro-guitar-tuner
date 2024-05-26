@@ -219,7 +219,6 @@ static void processing_start(void)
 	float32_t *freq_bin_magnitudes;
 	int max_bin_ind;
 	float32_t frequency; 
-	// TODO rm?
 	uint32_t prev_proc_start, proc_start, proc_end; 
 	
 	proc_start = counter_count();
