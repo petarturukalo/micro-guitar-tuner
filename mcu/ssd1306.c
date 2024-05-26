@@ -29,7 +29,6 @@ void ssd1306_init_i2c(enum ssd1306_i2c_slave_address addr)
 	gpio_set_output_options(GPIOB, GPIO_OTYPE_OD, GPIO_OSPEED_2MHZ, GPIO8|GPIO9);
 	gpio_set(GPIOB, GPIO8|GPIO9);
 	
-	/* TODO use lower clock_megahz param? */
 	i2c_set_speed(ssd1306_i2c_controller, i2c_speed_fm_400k, rcc_apb1_frequency/1e6);
 	i2c_peripheral_enable(ssd1306_i2c_controller);
 

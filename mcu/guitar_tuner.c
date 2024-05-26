@@ -225,8 +225,6 @@ static void processing_start(void)
 		prev_proc_start = proc_start;
 		proc_start = counter_count();
 
-		/* TODO turn on stuff used by processing (don't need to turn on in processing_init() anymore)*/
-
 		/* DSP. */
 		freq_bin_magnitudes = samples_to_freq_bin_magnitudes((const float32_t *)full_samples_frame, FRAME_LEN);
 		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN);
@@ -238,8 +236,6 @@ static void processing_start(void)
 		 * call in processing_init() a function called something like display_question_mark()
 		 */
 		display_note_and_slider(frequency);
-
-		/* TODO turn off stuff used by processing */
 
 		proc_end = counter_count();
 		printf("max mag %e, ", freq_bin_magnitudes[max_bin_ind]);
