@@ -193,6 +193,11 @@ static void display_note_and_slider(float32_t frequency)
 	ssd1306_fill_gddram();
 }
 
+static void display_question_mark(void)
+{
+	display_note_and_slider(0);
+}
+
 static void processing_init(void)
 {
 	counter_init();
@@ -200,7 +205,7 @@ static void processing_init(void)
 	ssd1306_init_i2c(SSD1306_I2C_SLAVE_ADDR_LOW);
 	ssd1306_init();
 	/* Show a question mark while the very first frame of samples is being collected. */
-	display_note_and_slider(0);
+	display_question_mark();
 }
 
 /*
@@ -233,11 +238,19 @@ static void processing_start(void)
 		max_bin_ind = max_bin_index(freq_bin_magnitudes, FRAME_LEN);
 		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN));
 
-		/* 
-		 * TODO show question mark if max mag under thresh (+17,+18, etc.). when do so make display_note_and_slider(0)
-		 * call in processing_init() a function called something like display_question_mark()
+		/*
+		 * Only display a note if the reading is strong enough, in order to filter out readings where there is
+		 * no actual note being played. From testing, the resting max magnitude when there is no sound being
+		 * made is e+17 (because the ADC is quite noisy), and when you play a note it will start at around 
+		 * e+22 to e+25 and then fade out / decline back to e+17. Be wary that this e+17 "noise floor" is 
+		 * when powering the MCU off a battery via the MCU's 5V pin: a dirtier power source, such as the
+		 * ST-Link, will have a higher noise floor, e.g. e+20, and so this threshold won't work and also
+		 * a note when played won't "hold" (display on screen) as long.
 		 */
-		display_note_and_slider(frequency);
+		if (freq_bin_magnitudes[max_bin_ind] >= 1.3e+18) 
+			display_note_and_slider(frequency);
+		else
+			display_question_mark();
 
 		proc_end = counter_count();
 		printf("max mag %e, ", freq_bin_magnitudes[max_bin_ind]);
