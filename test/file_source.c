@@ -17,7 +17,6 @@
 
 static bool str_has_suffix(const char *str, const char *suffix)
 {
-	int i, j;
 	int n = strlen(str);
 	int m = strlen(suffix);
 
