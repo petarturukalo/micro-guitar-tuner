@@ -205,7 +205,9 @@ static void processing_init(void)
 
 /*
  * Continuously wait for a frame of samples to be filled, then processing the full frame for
- * a detected closest note and showing it on the display.
+ * a detected closest note and showing it on the display. Because the sampling rate (OVERSAMPLING_RATE)
+ * is 4000 and the frame length (FRAME_LEN) is 4096, it will take 4096/4000 = 1.024 seconds to
+ * fill a frame. The processing of a frame from testing then takes around 0.092 seconds.
  */
 static void processing_start(void)
 {
