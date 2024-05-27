@@ -227,9 +227,9 @@ static void processing_start(void)
 
 		/* DSP. */
 		freq_bin_magnitudes = samples_to_freq_bin_magnitudes((const float32_t *)full_samples_frame, FRAME_LEN);
-		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN);
+		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN, OVERSAMPLING_RATE);
 		max_bin_ind = max_bin_index(freq_bin_magnitudes, FRAME_LEN);
-		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN));
+		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN, OVERSAMPLING_RATE));
 
 		/*
 		 * Only display a note if the reading is strong enough, in order to filter out readings where there is

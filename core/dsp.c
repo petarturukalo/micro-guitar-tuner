@@ -50,14 +50,14 @@ int nr_bins(enum frame_length frame_len)
 	return frame_len/2;
 }
 
-int bandwidth(void)
+int bandwidth(int sampling_rate)
 {
-	return OVERSAMPLING_RATE/2;
+	return sampling_rate/2;
 }
 
-float32_t bin_width(enum frame_length frame_len)
+float32_t bin_width(enum frame_length frame_len, int sampling_rate)
 {
-	return bandwidth()/(float32_t)nr_bins(frame_len);
+	return bandwidth(sampling_rate)/(float32_t)nr_bins(frame_len);
 }
 
 int freq_to_bin_index(float32_t frequency, float32_t binwidth)
@@ -86,13 +86,14 @@ float32_t bin_index_to_freq(int bin_index, float32_t binwidth)
  *
  * TODO add a "see paper referenced in resources" after resources added to main readme
  */
-void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length frame_len)
+void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length frame_len, 
+			       int sampling_rate)
 {
 	const int nbins = nr_bins(frame_len);
 	int i;  /* Bin index. */
 
 	/* Skip the frequencies below the lowest note. */
-	i = freq_to_bin_index((int)lowest_note_frequency(), bin_width(frame_len));
+	i = freq_to_bin_index((int)lowest_note_frequency(), bin_width(frame_len, sampling_rate));
 	for (bool finished = false; !finished; ++i) {
 		/* Start at 2 because the current bin is the 1st harmonic. */
 		for (int harmonic = 2; harmonic <= NHARMONICS; ++harmonic) {

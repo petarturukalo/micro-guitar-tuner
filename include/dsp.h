@@ -64,15 +64,13 @@ void samples_to_freq_bin_magnitudes_init(enum frame_length frame_len);
 float32_t *samples_to_freq_bin_magnitudes(const float32_t *samples, enum frame_length frame_len);
 
 int nr_bins(enum frame_length frame_len);
-int bandwidth(void);
+int bandwidth(int sampling_rate);
 /*
- * The bin width is dependent on the sampling rate and frame length: the larger the frame length
- * is relative to the sampling rate, the smaller the bin width, and so the better the frequency 
- * resolution. But this comes at the cost of time resolution, as now the frame takes longer to fill.
- *
- * Note this function assumes the sampling rate is OVERSAMPLING_RATE.
+ * The larger the frame length is relative to the sampling rate, the smaller the bin width, and so 
+ * the better the frequency resolution. But this comes at the cost of time resolution, as now the 
+ * frame takes longer to fill.
  */
-float32_t bin_width(enum frame_length frame_len);
+float32_t bin_width(enum frame_length frame_len, int sampling_rate);
 /* Get the index of the bin which the frequency falls into. */
 int freq_to_bin_index(float32_t frequency, float32_t binwidth);
 float32_t bin_index_to_freq(int bin_index, float32_t binwidth);
@@ -85,7 +83,8 @@ float32_t bin_index_to_freq(int bin_index, float32_t binwidth);
  * frequency peak into the maximum peak. This is done because the maximum peak isn't 
  * necessarily the fundamental, and may be a different harmonic.
  */
-void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length frame_len);
+void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length frame_len,
+			       int sampling_rate);
 /* Get the index of the frequency bin with the maximum magnitude peak. */
 int max_bin_index(float32_t *freq_bin_magnitudes, enum frame_length frame_len);
 
