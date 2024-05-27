@@ -8,14 +8,9 @@
 #
 # Users of this lib must also link against libm.
 
-# Number of filter coefficients. See the gen_filter_coeffs.m script for more info.
-# The filtering can be a huge bottleneck for the processing, especially on an MCU
-# without a FPU such as the pico, so this can't be too high. 
-nr_taps = 128
-# See comment at ../include/dsp.h:OVERSAMPLING_RATE
-oversampling_rate = 4000
+include dsp_params.mk
 
-CFLAGS += -DNR_TAPS=$(nr_taps) -DOVERSAMPLING_RATE_FROM_MAKEFILE=$(oversampling_rate)
+CFLAGS += -DNR_TAPS=$(nr_taps) 
 # Flags to enable 32-bit float real FFT, frame length 4096. 
 # See RFFT_FAST_<type>_<frame len> (e.g. RFFT_FAST_F32_4096) from CMSIS-DSP/Source/fft.cmake 
 # for the defines needed to use a real FFT of a particular data type and frame length.

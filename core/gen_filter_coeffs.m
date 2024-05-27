@@ -14,7 +14,7 @@ oversampling_rate = str2num(argv{1});
 % Filter out some of the low frequency noise and frequencies less than
 % the lowest note C0. Ideally want a very sharp slope at ~16 Hz but the 
 % order required for it is too high and makes the performance unusable
-% (see also comment at nr_taps variable in Makefile).
+% (see also comment at nr_taps variable in dsp_params.mk).
 highpass_cutoff_freq = 13;
 % So it begins to slope just about the highest supported note, G#6.
 % See also comments at 'note.c:note_freqs'.
