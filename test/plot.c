@@ -19,7 +19,11 @@ static void plot_magnitudes(FILE *gnuplot, float32_t *freq_bin_magnitudes, enum 
 {
 	const int nbins = nr_bins(frame_len);
 	const float32_t binwidth = bin_width(frame_len, OVERSAMPLING_RATE);
-	float bin_centre_xpos = binwidth/2;
+	/* 
+	 * Boxes (bins) are drawn centred about this x-position, and is the same as the frequency of
+	 * the bin that is being drawn at it.
+	 */
+	float bin_centre_xpos = binwidth;
 
 	fprintf(gnuplot, "set key noautotitle\n");  /* Remove default keyentry. */
 	fprintf(gnuplot, "set key inside right top offset -7,0\n");
@@ -31,7 +35,7 @@ static void plot_magnitudes(FILE *gnuplot, float32_t *freq_bin_magnitudes, enum 
 	fprintf(gnuplot, "keyentry 'bin width %.3f Hz'\n", binwidth);
 	/* Plot magnitudes. Start at 1 to skip DC. */
 	for (int i = 1; i < nbins; ++i) {
-		fprintf(gnuplot, "%.4f %a\n", bin_centre_xpos, freq_bin_magnitudes[i]);
+		fprintf(gnuplot, "%.9f %a\n", bin_centre_xpos, freq_bin_magnitudes[i]);
 		bin_centre_xpos += binwidth;
 	}
 	fprintf(gnuplot, "e\n");
