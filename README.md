@@ -102,7 +102,7 @@ above the Nyquist frequency and prevent aliasing. To visualise the filter with G
 3. Convert the complex number output of the FFT to magnitudes to get the energy of the spectra.
 The following plot depicts the magnitude data after completion of this step for audio samples of
 note G3. Notice there are harmonic peaks at integer multiples of the fundamental frequency (the 
-fundamental frequnecy of G3 is 195.998).
+fundamental frequnecy of G3 is 195.998 Hz).
 
 	TODO show plot
 
