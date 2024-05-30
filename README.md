@@ -56,8 +56,8 @@ TODO introduce parts using their simple names "STM32 MCU board", "mic", "display
 
 This section describes how I have gone about powering this project, and
 so details a battery configuration that has been tested and known to work. 
-In the end battery configuration is up to you, but if you do use your own 
-configuration ensure to use a clean power supply because a dirty power supply 
+In the end battery configuration is up to you, so if you do use your own 
+configuration, just ensure to use a clean power supply because a dirty power supply 
 (e.g. ST-Link) will introduce noise into the ADC and the program won't work 
 as well (if at all).
 
