@@ -77,6 +77,7 @@ The boost takes a 0.9-4.75V input voltage range, which satisfies the
 
 TODO capitalise lipo? (LiPo?)
 TODO voltage range of lipo correct? or goes even lower?
+TODO spacing between units? be consistent or doesn't matter?
 
 ## Connections
 
@@ -95,7 +96,7 @@ TODO show fritzing of all connections
 The following lists the DSP steps involved in processing a "frame" of audio samples for a detected note.
 
 1. Apply a band-pass filter, mostly for its low-pass (anti-aliasing) filter part to cut off frequencies 
-above the Nyquist frequency and prevent aliasing. To visualise the filter with GNU Octave, do
+above the Nyquist frequency and prevent aliasing. To visualise the filter with GNU Octave, run
 `make -C core plot-filter-coeffs`.
 2. Run FFT to convert samples from time domain to frequency domain.
 3. Convert the complex number output of the FFT to magnitudes to get the energy of the spectra.
