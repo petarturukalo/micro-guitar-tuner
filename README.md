@@ -1,40 +1,212 @@
+# Description
+
+A microcontroller (STM32) guitar tuner.
+
+TODO embed video demonstration of it. 
+
+
+# Motivation
+
+The motivation behind this project is that I wanted to write a guitar tuner that I
+would actually want to use. And for me to want to use it, it had to be similar in form
+factor and functionality to the current tuner I use, the Korg Pitchclip, which is small,
+portable (battery powered), and boots into the tuner instantly.
+
+A microcontroller meets all of this criteria, hence this guitar tuner is implemented with 
+a microcontroller. This was initally written for the Raspberry Pi Pico microcontroller board, 
+then ported to STM32 (particular MCU board mentioned below) for the following reasons.
+
+1. The STM32 MCU here has a FPU whereas the Pico doesn't, and the DSP does a fair amount 
+of floating point processing. In particular the low-pass filter stage of the DSP was a 
+huge bottleneck on the Pico because of this, not allowing it to sleep and save power, 
+and adding delay to when a note reading could be displayed.
+2. The STM32 has better power saving options, allowing for less overall current consumption,
+beneficial for battery operation.
+3. The MCU board here has two adequately separate 3V3 pins, whereas the Pico only has one, 
+allowing the mic and display to be on separate power lines so the voltage ripple and noise
+introduced by the display doesn't ruin the operation of the mic.
+
+
+# Assembly
+
+This section explains how to create the guitar tuner: all the parts needed and how 
+to connect them together.
+
+## Parts
+
+- WeAct Studio STM32F411CEU6 BlackPill V3.1 (TODO or V3.0?) 25 MHz HSE 
+
+	https://github.com/WeActStudio/WeActStudio.MiniSTM32F4x1
+	https://www.aliexpress.com/item/1005001456186625.html
+	https://www.dfrobot.com/product-2338.html
+
+- Adafruit Electret Mic Amp MAX4466 https://core-electronics.com.au/electret-microphone-amplifier-max4466-with-adjustable-gain.html
+- I2C 128x64 SSD1306 OLED display https://www.dfrobot.com/product-2017.html
+
+	Any 128x64 SSD1306 OLED should work, but I use the DFRobot DFR0650
+	in particular, so it is preferred. Note by default the display code 
+	writes to I2C slave address 0x3C, but this can be changed in code.
+
+- 3.7V 600 mAh lipo battery TODO?
+- SparkFun LiPo Charger/Booster 5V https://www.sparkfun.com/products/14411
+
+TODO fix up names of all parts to be more precise, and hyperlink all
+TODO introduce parts using their simple names "STM32 MCU board", "mic", "display", "battery"? or not?
+
+## Power
+
+This section describes how I have gone about powering this project and
+how it has been made and is what has been tested with and known to work. 
+In the end battery configuration is up to you, but if you do use your own 
+configuration ensure to use a clean power supply because a dirty power supply 
+(e.g. ST-Link) will introduce noise into the ADC and the program won't work 
+as well (if at all).
+
+The current consumption of the program (load), tested when powered
+via ST-Link, is mostly ~7 mA with spikes up to 14 mA. TODO mention
+current when run off boost (if possible with [2]?)
+
+Choice of battery is a 3.7V 600 mAh lipo (TODO hyperlink). The battery powers
+the MCU via 5V boost to its 5V pin instead of its 3.3V pin to take advantage 
+of its on-board 3.3V regulator.
+
+Choice of 5V output boost (TODO hyperlink) is because it combines a charging 
+circuit, 5V boost, and on/off switch all in one module. The charger is 
+so that the battery doesn't have to be detached in order to be recharged. 
+The boost takes a 0.9-4.75V input voltage range, which satisfies the 
+3-4.2V voltage range of the lipo.
+
+TODO capitalise lipo? (LiPo?)
+TODO voltage range of lipo correct? or goes even lower?
+
+## Connections
+
+Ensure the mic and display use separate 3V3 and ground pins because the 
+voltage ripple and noise introduced by the display ruins the operation 
+of the mic. Also ensure the ground path back to the battery does not use 
+the mic's ground pin, as from testing it introduces noise into the ADC.
+
+TODO confirm the above is still the case with the new sparkfun boost? (should be)
+
+TODO show fritzing of all connections
+
+
+# DSP
+
+The following lists the DSP steps involved in processing a "frame" of audio samples for a detected note.
+
+1. Apply a band-pass filter, mostly for its low-pass (anti-aliasing) filter part to cut off frequencies 
+above the Nyquist frequency and prevent aliasing. To visualise the filter with GNU Octave, do
+`make -C core plot-filter-coeffs`.
+2. Run FFT to convert samples from time domain to frequency domain.
+3. Convert the complex number output of the FFT to magnitudes to get the energy of the spectra.
+The following plot depicts the magnitude data after completion of this step for audio samples of
+note G3. Notice there are harmonic peaks at integer multiples of the fundamental frequency (the 
+fundamental frequnecy of G3 is 195.998).
+
+	TODO show plot
+
+4. Apply a Harmonic Product Spectrum (HPS) to the magnitudes to turn the fundamental frequency peak 
+into the maximum peak. This is done because the maximum peak isn't necessarily the fundamental, and may 
+be a different harmonic, as is the case in the above plot. After HPS the plot now looks like the 
+following, with the fundamental now the maxmimum peak. See `test/README.md` (TODO relative link?) for 
+generating these plots on the test data yourself.
+
+	TODO show plot
+
+5. Select the frequency bin with the max magnitude as the detected frequency.
+
+
+# Directory Structure
+
+The `core/` directory holds sources for the core library, and `include/` its
+headers/API. The core library implements the non-MCU (core) functionality of
+the program, e.g. DSP, so that it can be tested completely separate of the 
+MCU. 
+
+The `test/` directory contains sources to build binaries to programmatically
+test and visualise the core library. See `test/README.md` (TODO relative link?)
+for more info.
+
+The `mcu/` directory contains the MCU specific sources.
+
 TODO
-- description: A Raspberry Pi Pico microcontroller guitar tuner (TODO
-if use RTOS then mention that too, etc.)
--- put demo vid here first thing (try and embed it in the output)
--- maybe even name project to mcu (or microcontroller) guitar tuner
-- add motivation section for why it's pico (refer first paragraph of doc/overview.txt):
-- list and link to dependent hardware (including the pico itself), their use and how
-it relates/fulfills the motivation if possible (e.g. coin cell battery, so needed Pico)
--- show how the pin/wire component connections, maybe with fritzing? 
-- list dependent software: SDK, RTOS if applicable, etc., and why software architecture
-is the way it is (because wanted Pico)
--- CMSIS DSP/core
--- gnu octave 
--- gnuplot? (optional)
--- TODO also list exact versions of software?
-- can list theory books if needed for reader's further knowledge. 
--- ref music and computers to learn more about the theory behind it
--- ref digital audio with java book as supplementary info for whatever i used it for
-(digital filters, FFT, cents)
--- ref HPS stuff (which? Noll because it has the formula, any others that helped
-in understanding Noll? "efficient pitch detection for interactive music" for outlining
-the variables used in Noll's HPS equation better?)
-from it: digital filters, fft, high-level guitar tuner example (just to confirm
-understanding/assumptions)
-- basically give all the info needed for the reader to build their own pico guitar
-tuner using my source
-- should link to pico docs at all (pico sdk?)? or reader expected to be familiar? can ref pico sdk
-or other material to remind them how to build it and because it's dependent lib, or give instructions on making it with cmake
--- rp2040 datasheet adc section for adc code? and NVIC? and sleep mode?
--- definitely pico SDK
--- SSD1306 datasheet?
--- main pico webpage for pin layout?
-- mention how to run tests (emulation, graph outputs, etc.). or put in test/README.md and
-tell reader to go look there
-- mention parameters (sampling rate, etc.), implementation and limitations of FFT, 
-dynamic frame size to help, etc.
-- explain directory structure: core is for src of core lib. include is its API.
-test is for tests for testing core. mcu (if make a folder for it?) is for mcu 
-specific usage. allows to separate and test the majority of the functionality
-separately to the mcu code (rationale?) ...
+- explain somewhere tests (or architecture of core/tests) is so that can
+test pretty much all the non-mcu functionality without needing the mcu,
+but still using what mcu would be using and replicating with qemu on
+a cortex-A processor
+- explain that mcu is cortex-m but tests simulate cortex-a wih qemu emulation?
+
+
+# Dependent Software
+
+**Internal Submodule Libraries**
+- [CMSIS-DSP](https://arm-software.github.io/CMSIS-DSP/v1.14.4/index.html) for DSP: filters, FFT, etc.
+- [libopencm3](https://libopencm3.org/) for its STM32F4 runtime environment and low-level hardware library
+
+**External**
+- [GNU Octave](https://octave.org/) for generating filter coefficients. Needed to build the core library.
+- [gnuplot](http://www.gnuplot.info/) for (optionally) generating plots to visualise the DSP. See the `test/`
+directory for more info.
+
+
+# Usage
+
+To build and install the guitar tuner program on your ST-Link connected board.
+
+```
+cd mcu
+make
+make flash
+```
+
+When powered, shown on the top half of the display is the nearest detected note, 
+or a question mark if no sound is being made. On the bottom half of the display 
+is a slider with two tics, a smaller one fixed in the middle of the slider marking
+the frequency of the nearest detected note, and another bigger one appearing anywhere 
+along the slider depicting how far in cents away the detected frequency is away from
+the nearest note. One pixel on the slider is one cent, and there is up to 50 cents 
+either side of the centre tic. The further to the left the big tic is from the centre
+tic, the lower in frequency it is relative to the centre tic, and the further to the
+right the big tic is away from the centre tic, the higher in frequency it is relative
+to the centre tic. An open string is in tune when the big tic is as close to the 
+centre tic as it can get (TODO refer (hyperlink?) limitations).
+
+TODO show picture of it (with label saying that detected frequency is lower than
+nearest note (or other way around depending on picture)), or say to refer to video (or both)
+
+
+# Limitations
+
+## Frequency Resolution
+
+The FFT frequency bin width is fixed, e.g. here the bin width is ~0.977 Hz (see function
+`include/dsp.h:bin_width()` and its implementation for more info), but the distance in frequency
+between notes increases as frequency increases. Thus the frequency resolution is worse at lower
+frequencies, e.g. the jumps of the big tic on the display slider will be bigger and it will
+be harder to accurately align it with the centre tic, making it harder to get in tune lower
+notes like open E2 on the low E string. This is just a shortcoming of the FFT.
+
+## Higher Notes
+
+See comment at G#4 at `core/note.c:note_freqs`.
+
+
+# Resources
+
+TODO add blackpill board pinout and schematic. if pinout ends up being linked to in parts section
+then don't need that here. but still need stm32-base link for schematic? (put here or in parts section)
+TODO test links
+
+- [Music and Computers [Book]](https://musicandcomputersbook.com/): to learn about the theory involved here
+- [Craig A. Lindley - Digital Audio with Java [Book]]: used as supplementary material on digital filters, FFT, cents
+- [A. Michael Noll's paper on Harmonic Product Spectrum](http://noll.uscannenberg.org/ScannedPapers/Harmonic%20Sum%20Paper.zip): defines the HPS formula 
+- [SSD1306 Datasheet](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
+- [STM32F411CE Datasheet](https://www.st.com/resource/en/datasheet/stm32f411ce.pdf)
+- [STM32F411CE Reference Manual](https://www.st.com/resource/en/reference_manual/rm0383-stm32f411xce-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
+
+
+TODO reorder everything
+
+TODO
+- mention how to run tests (emulation, graph outputs, etc.) (put this in test/README.md)
