@@ -198,7 +198,7 @@ TODO add blackpill board pinout and schematic. if pinout ends up being linked to
 then don't need that here. but still need stm32-base link for schematic? (put here or in parts section)
 TODO test links
 
-- [Music and Computers [Book]](https://musicandcomputersbook.com/): if you'd like to learn about the theory involved here
+- [Music and Computers [Book]](https://musicandcomputersbook.com/): if you'd like to learn more about the theory involved here
 - Craig A. Lindley - Digital Audio with Java [Book]: used as supplementary material on digital filters, FFT, cents
 - [A. Michael Noll's paper on Harmonic Product Spectrum](http://noll.uscannenberg.org/ScannedPapers/Harmonic%20Sum%20Paper.zip): defines the HPS formula 
 - [SSD1306 Datasheet](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
