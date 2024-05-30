@@ -7,10 +7,9 @@ TODO embed video demonstration of it.
 
 # Motivation
 
-The motivation behind this project is that I wanted to write a guitar tuner that I
-would actually want to use. And for me to want to use it, it had to be similar in form
-factor and functionality to the current tuner I use, the Korg Pitchclip, which is small,
-portable (battery powered), and boots into the tuner instantly.
+I wanted to write a guitar tuner that I would actually want to use, and for me to want 
+to use it, it had to be similar in form factor and functionality to the current tuner I use, 
+the Korg Pitchclip, which is small, portable (battery powered), and boots into the tuner instantly.
 
 A microcontroller meets all of this criteria, hence this guitar tuner is implemented with 
 a microcontroller. This was initally written for the Raspberry Pi Pico microcontroller board, 
@@ -29,8 +28,8 @@ introduced by the display doesn't ruin the operation of the mic.
 
 # Assembly
 
-This section explains how to create the guitar tuner: all the parts needed and how 
-to connect them together.
+The following explains how to create the guitar tuner: all the parts needed, how to connect 
+them together, and any caveats.
 
 ## Parts
 
