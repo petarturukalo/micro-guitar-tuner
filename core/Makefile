@@ -64,5 +64,3 @@ clean:
 plot-filter-coeffs: plot_filter_coeffs.m gen_filter_coeffs.m
 	octave plot_filter_coeffs.m $(oversampling_rate) $(nr_taps)
 
-# TODO
-# - document plot-filter-coeffs in a readme that it's to visualise the filter
