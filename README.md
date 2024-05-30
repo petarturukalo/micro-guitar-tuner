@@ -182,7 +182,7 @@ nearest note (or other way around depending on picture)), or say to refer to vid
 
 The FFT frequency bin width is fixed, e.g. here the bin width is ~0.977 Hz (see function
 `include/dsp.h:bin_width()` and its implementation for more info), but the distance in frequency
-between notes increases as frequency increases. Thus the frequency resolution is worse at lower
+between notes decreases as frequency decreases. Thus the frequency resolution is worse at lower
 frequencies, e.g. the jumps of the big tic on the display slider will be bigger and it will
 be harder to accurately align it with the centre tic, making it harder to get in tune lower
 notes like open E2 on the low E string. This is just a shortcoming of the FFT.
