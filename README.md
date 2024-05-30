@@ -146,8 +146,8 @@ a cortex-A processor
 
 **External**
 - [GNU Octave](https://octave.org/) for generating filter coefficients. Needed to build the core library.
-- [gnuplot](http://www.gnuplot.info/) for (optionally) generating plots to visualise the DSP. See the `test/`
-directory for more info.
+- [gnuplot](http://www.gnuplot.info/) for (optionally) generating plots to visualise the DSP. See `test/README.md` (TODO relative link?)
+for more info.
 
 
 # Usage
