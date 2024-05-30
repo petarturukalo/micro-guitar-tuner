@@ -7,7 +7,7 @@ TODO embed video demonstration of it.
 
 # Motivation
 
-I wanted to write a guitar tuner that I would actually want to use. For me to want 
+I wanted to write a guitar tuner that I would actually want to use, and for me to want 
 to use it, it had to be similar in form factor and functionality to the current tuner I use, 
 the Korg Pitchclip, which is small, portable (battery powered), and boots into the tuner instantly.
 
