@@ -19,11 +19,11 @@ libcore = ../core/libcore-A.a
 
 all: $(gen_plots_bin) $(assert_tests_bin)
 
-$(gen_plots_bin): $(gen_plot_objs) $(libcore)
-	$(CC) -o $@  $^ -lm
+$(gen_plots_bin): $(libcore) .WAIT $(gen_plot_objs) 
+	$(CC) -o $@  $(gen_plot_objs) $(libcore) -lm
 
-$(assert_tests_bin): $(assert_tests_objs) $(libcore)
-	$(CC) -o $@  $^ -lm
+$(assert_tests_bin): $(libcore) .WAIT $(assert_tests_objs) 
+	$(CC) -o $@  $(assert_tests_objs) $(libcore) -lm
 
 $(libcore):
 	$(MAKE) -C ../core 

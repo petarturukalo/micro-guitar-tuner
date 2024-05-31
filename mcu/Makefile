@@ -26,8 +26,8 @@ libopencm3 = libopencm3/lib/libopencm3_stm32f4.a
 guitar-tuner.bin: guitar-tuner.elf
 	$(cross_prefix)objcopy -O binary $< $@
 
-guitar-tuner.elf: $(objs) $(libcore) $(libopencm3)
-	$(CC) $(LDFLAGS) -o $@  $^ $(LDLIBS)
+guitar-tuner.elf: $(libcore) $(libopencm3) .WAIT $(objs)
+	$(CC) $(LDFLAGS) -o $@  $(objs) $(libcore) $(libopencm3) $(LDLIBS)
 	$(cross_prefix)size $@
 
 # Build libopencm3 before guitar_tuner.c because it includes header libopencm3/stm32/f4/nvic.h 
@@ -40,8 +40,6 @@ $(libcore):
 $(libopencm3): libopencm3/Makefile
 	$(MAKE) -C libopencm3 TARGETS=stm32/f4
 
-# TODO test this after finished. can just refer to the dir instead of makefile?
-# TODO works from this dir? don't need to be in root dir?
 libopencm3/Makefile:
 	git submodule update --init
 
