@@ -109,7 +109,7 @@ fundamental frequnecy of G3 is 195.998 Hz).
 4. Apply a Harmonic Product Spectrum (HPS) to the magnitudes to turn the fundamental frequency peak 
 into the maximum peak. This is done because the maximum peak isn't necessarily the fundamental, and may 
 be a different harmonic, as is the case in the above plot. After HPS the plot now looks like the 
-following, with the fundamental now the maxmimum peak. See the [`test/`](test) and its README for 
+following, with the fundamental now the maxmimum peak. See the [`test/`](test) dir and its README for 
 generating these plots on the test data yourself.
 
 	TODO show plot
@@ -125,7 +125,7 @@ the program, e.g. DSP, so that it can be tested completely separate of the
 MCU. 
 
 The `test/` directory contains sources to build binaries to programmatically
-test and visualise the core library. See the [`test/`](test) and its README for
+test and visualise the core library. See the [`test/`](test) dir and its README for
 more info.
 
 The `mcu/` directory contains the MCU specific sources.
@@ -140,7 +140,7 @@ The `mcu/` directory contains the MCU specific sources.
 **External**
 - [GNU Octave](https://octave.org/) for generating filter coefficients. Needed to build the core library.
 - [gnuplot](http://www.gnuplot.info/) for (optionally) generating plots to visualise the DSP. See the 
-[`test/`](test) and its README for more info.
+[`test/`](test) dir and its README for more info.
 
 
 # Usage
