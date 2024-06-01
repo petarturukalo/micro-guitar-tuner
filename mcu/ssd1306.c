@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0
  *
  * This source implements the Solomon Systech SSD1306 datasheet,
- * linked to in top-level README (TODO?).
+ * linked to in the "Resources" section of the top-level README.
  */
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>

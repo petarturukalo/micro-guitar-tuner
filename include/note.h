@@ -41,7 +41,8 @@ float32_t lowest_note_frequency(void);
  * same distance in frequency. So cents is used because the difference in cents reflects
  * our perception.
  *
- * TODO reference this function was taken from the digital audio with java book
+ * This function was taken from the Digital Audio with Java book by Craig A. Lindley,
+ * referenced in the "Resources" section of the top-level README.
  */
 int cents_difference(float32_t frequency, struct note_freq *reference);
 

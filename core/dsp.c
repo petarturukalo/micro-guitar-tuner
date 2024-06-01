@@ -84,7 +84,8 @@ float32_t bin_index_to_freq(int bin_index, float32_t binwidth)
  * which takes as input a frequency f, and outputs the product of the first K harmonic
  * magnitudes. Note the input frequency is the very first (k=1) harmonic.
  *
- * TODO add a "see paper referenced in resources" after resources added to main readme
+ * See also the Harmonic Product Spectrum paper by A. Michael Noll, linked to in the 
+ * "Resources" section of the top-level README.
  */
 void harmonic_product_spectrum(float32_t *freq_bin_magnitudes, enum frame_length frame_len, 
 			       int sampling_rate)
