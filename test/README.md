@@ -37,7 +37,7 @@ The xtics are spaced at 100 Hz: to see more accurately the frequency of a peak, 
 the svg plot file in a browser and then left click the mouse to bring up the coordinate 
 that the cursor is currently over, as in the following image.
 
-![TODO](../.images/G3-with-coord.png)
+![G3 with coordinate](../.images/G3-with-coord.png)
 
 # Assertion Tests
 

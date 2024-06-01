@@ -104,7 +104,7 @@ The following plot depicts the magnitude data after completion of this step for 
 note G3. Notice there are harmonic peaks at integer multiples of the fundamental frequency (the 
 fundamental frequency of G3 is 195.998 Hz).
 
-![TODO what does this text do 1?](.images/G3-1.svg)
+![G3](.images/G3-1.svg)
 
 4. Apply a Harmonic Product Spectrum (HPS) to the magnitudes to turn the fundamental frequency peak 
 into the maximum peak. This is done because the maximum peak isn't necessarily the fundamental, and may 
@@ -112,7 +112,7 @@ be a different harmonic, as is the case in the above plot. After HPS the plot no
 following, with the fundamental now the maxmimum peak. See the [`test/`](test) dir and its README for 
 generating these plots on the test data yourself.
 
-![TODO what does this text do 2?](.images/G3-hps-1.svg)
+![G3 after HPS](.images/G3-hps-1.svg)
 
 5. Select the frequency bin with the max magnitude as the detected frequency.
 
