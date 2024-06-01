@@ -158,7 +158,7 @@ When powered, shown on the top half of the display is the nearest detected note,
 or a question mark if no sound is being made. On the bottom half of the display 
 is a slider with two tics, a smaller one fixed in the middle of the slider marking
 the frequency of the nearest detected note, and another bigger one appearing anywhere 
-along the slider depicting how far in cents away the detected frequency is away from
+along the slider depicting how far in cents the detected frequency is away from
 the nearest note (frequency increases left to right along the slider). 
 
 For example, in the below image the nearest detected note is G3, and the detected frequency
