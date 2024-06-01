@@ -34,7 +34,7 @@ one before HPS processing, and one after (see the [DSP](https://github.com/petar
 section in the top-level README for more info). 
 
 The xtics are spaced at 100 Hz: to see more accurately the frequency of a peak, open 
-the svg plot file in a browser and then left click the mouse to bring up the coordinate 
+the svg plot file in a web browser and then left click the mouse to bring up the coordinate 
 that the cursor is currently over, as in the following image.
 
 ![G3 with coordinate](../.images/G3-with-coord.png)
