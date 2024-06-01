@@ -109,7 +109,7 @@ fundamental frequnecy of G3 is 195.998 Hz).
 4. Apply a Harmonic Product Spectrum (HPS) to the magnitudes to turn the fundamental frequency peak 
 into the maximum peak. This is done because the maximum peak isn't necessarily the fundamental, and may 
 be a different harmonic, as is the case in the above plot. After HPS the plot now looks like the 
-following, with the fundamental now the maxmimum peak. See `test/README.md` (TODO relative link?) for 
+following, with the fundamental now the maxmimum peak. See [`test/README.md`](test/README.md) (TODO relative link?) for 
 generating these plots on the test data yourself.
 
 	TODO show plot
