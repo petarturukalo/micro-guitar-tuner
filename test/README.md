@@ -11,7 +11,7 @@ to build them because CMSIS DSP is for ARM Cortex-A and ARM Cortex-M processors.
 Note these binaries depend on and build a Cortex-A version of the core library,
 whereas the guitar tuner proper binary in `../mcu/` depends on and builds a Cortex-M
 version. Compile both binaries by running `make`, which uses `arm-linux-gnueabihf-gcc` 
-by default. 
+to cross compile by default. 
 
 Because these are ARM binaries, you'll likely need to use an emulator such as QEMU 
 to run them, e.g. 
