@@ -1,7 +1,8 @@
 # Intro
 
 There are two test programs, `assert-tests` to programmatically test
-the core library, and `gen-freq-mag-plots` to visualise aspects of its DSP.
+the core library, and `gen-freq-mag-plots` to generate plots to visualise 
+aspects of its DSP.
 
 # Usage 
 
