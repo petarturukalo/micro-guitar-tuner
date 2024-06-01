@@ -158,15 +158,17 @@ or a question mark if no sound is being made. On the bottom half of the display
 is a slider with two tics, a smaller one fixed in the middle of the slider marking
 the frequency of the nearest detected note, and another bigger one appearing anywhere 
 along the slider depicting how far in cents away the detected frequency is away from
-the nearest note. One pixel on the slider is one cent, and there is up to 50 cents 
-either side of the centre tic. The further to the left the big tic is from the centre
-tic, the lower in frequency it is relative to the centre tic, and the further to the
-right the big tic is away from the centre tic, the higher in frequency it is relative
-to the centre tic. An open string is in tune when the big tic is as close to the 
-centre tic as it can get (see the [Frequency Resolution Limitation](https://github.com/petarturukalo/micro-guitar-tuner/tree/main?tab=readme-ov-file#frequency-resolution) 
+the nearest note (frequency increases left to right along the slider). 
+
+For example, in the below image the nearest detected note is G3, and the detected frequency
+is lower than and out of tune with the G3 reference. To get it tune, tune up until the big tic
+is as close to the centre tic as it can get (see the [Frequency Resolution Limitation](https://github.com/petarturukalo/micro-guitar-tuner/tree/main?tab=readme-ov-file#frequency-resolution) 
 section below for why this reads as "as close to the centre tic as it can get").
 
 ![Display](.images/display-example.jpg)
+
+Note one pixel on the slider is one cent, and there is up to 50 cents either side of the 
+centre tic. 
 
 
 # Limitations
