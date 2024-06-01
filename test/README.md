@@ -25,9 +25,9 @@ WARNING the generated plots take up a fair amount of disk space, ~150 MB.
 # Generate Plots
 
 The `gen-freq-mag-plots` binary takes as input samples from all note audio file 
-sources in the `test/data/note/` dir and outputs plots to the `plot/` dir. Plots
+sources in the `data/note/` dir and outputs plots to the `plot/` dir. Plots
 are generated using [gnuplot](http://www.gnuplot.info/), and so must be installed. 
-See the README in [`test/data/note/`](test/data/note) for an explanation of the file 
+See the README in [`data/note/`](data/note) for an explanation of the file 
 format of the note file sources. Produced for each frame of samples is two plots,
 both showing the magnitude of the frequencies of the note in the frequency domain,
 one before HPS processing, and one after (see the [DSP](https://github.com/petarturukalo/micro-guitar-tuner/tree/main?tab=readme-ov-file#dsp) 
@@ -44,6 +44,6 @@ that the cursor is currently over, as in the following image.
 The `assert-tests` binary simply runs assertion tests on core library API functions
 and outputs whether all tests succeeded. If a test fails it will output where in the
 source the test failed, along with some simple diagnostics. The assertion tests also
-use the note audio file sources in `test/data/note/` as test data, along with the 
-sine wave file sources in `test/data/sine/`.
+use the note audio file sources in `data/note/` as test data, along with the 
+sine wave file sources in `data/sine/`.
 
