@@ -138,7 +138,8 @@ The `mcu/` directory contains the MCU specific sources.
 - [libopencm3](https://libopencm3.org/) for its STM32F4 runtime environment and low-level hardware library
 
 **External**
-- [GNU Octave](https://octave.org/) for generating filter coefficients. Needed to build the core library.
+- [GNU Octave](https://octave.org/) with the [signal](https://gnu-octave.github.io/packages/signal/) package installed. 
+Used for generating filter coefficients, needed to build the core library.
 - [gnuplot](http://www.gnuplot.info/) for (optionally) generating plots to visualise the DSP. See the 
 [`test/`](test) dir and its README for more info.
 
