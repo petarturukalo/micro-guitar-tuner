@@ -37,7 +37,7 @@ Xtics are spaced at `plot.c:XTICS_INCR` Hz: to see more accurately the frequency
 a peak, open the svg plot file in a browser and then left click the mouse to bring up 
 the coordinate that the cursor is currently over, as in the following image.
 
-	TODO show image of G3 with coordinate over fundamental frequency peak
+![TODO](G3-with-coord.png)
 
 # Assertion Tests
 
