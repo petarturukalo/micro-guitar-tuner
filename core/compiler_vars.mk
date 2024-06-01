@@ -20,7 +20,6 @@ endif
 endif
 
 ifeq ($(arm_arch_profile), M)
-# TODO test compiling natively (not cross compiling) on rpi4b
 ifndef cross_prefix
 $(error Cortex-M needs variable cross_prefix defined)
 endif
