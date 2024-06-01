@@ -33,9 +33,9 @@ both showing the magnitude of the frequencies of the note in the frequency domai
 one before HPS processing, and one after (see the [DSP](https://github.com/petarturukalo/micro-guitar-tuner/tree/main?tab=readme-ov-file#dsp) 
 section in the top-level README for more info). 
 
-Xtics are spaced at `plot.c:XTICS_INCR` Hz: to see more accurately the frequency of 
-a peak, open the svg plot file in a browser and then left click the mouse to bring up 
-the coordinate that the cursor is currently over, as in the following image.
+The xtics are spaced at 100 Hz: to see more accurately the frequency of a peak, open 
+the svg plot file in a browser and then left click the mouse to bring up the coordinate 
+that the cursor is currently over, as in the following image.
 
 ![TODO](../.images/G3-with-coord.png)
 
