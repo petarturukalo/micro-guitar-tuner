@@ -130,13 +130,6 @@ for more info.
 
 The `mcu/` directory contains the MCU specific sources.
 
-TODO
-- explain somewhere tests (or architecture of core/tests) is so that can
-test pretty much all the non-mcu functionality without needing the mcu,
-but still using what mcu would be using and replicating with qemu on
-a cortex-A processor
-- explain that mcu is cortex-m but tests simulate cortex-a wih qemu emulation?
-
 
 # Dependent Software
 
