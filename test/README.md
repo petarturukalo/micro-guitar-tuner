@@ -30,7 +30,8 @@ are generated using [gnuplot](http://www.gnuplot.info/), and so must be installe
 See the README in [`test/data/note/`](test/data/note) for an explanation of the file 
 format of the note file sources. Produced for each frame of samples is two plots,
 both showing the magnitude of the frequencies of the note in the frequency domain,
-one before HPS processing, and one after (see TODO top-level README DSP section for more info). 
+one before HPS processing, and one after (see the [DSP](https://github.com/petarturukalo/micro-guitar-tuner/tree/main?tab=readme-ov-file#dsp) 
+section in the top-level README for more info). 
 
 Xtics are spaced at `plot.c:XTICS_INCR` Hz: to see more accurately the frequency of 
 a peak, open the svg plot file in a browser (TODO test which browsers work) and then
