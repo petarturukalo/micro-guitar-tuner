@@ -13,8 +13,8 @@ whereas the guitar tuner proper binary in `../mcu/` depends on and builds a Cort
 version. Compile both binaries by running `make`, which uses `arm-linux-gnueabihf-gcc` 
 to cross compile by default. 
 
-Because these are ARM binaries, you'll likely need to use an emulator such as QEMU 
-to run them, e.g. 
+Because these are ARM binaries, unless you're on a native ARM machine like a Raspberry
+Pi, you'll need to use an emulator such as QEMU to run them, e.g. 
 
 ```
 qemu-arm -L /usr/arm-linux-gnueabihf gen-freq-mag-plots
