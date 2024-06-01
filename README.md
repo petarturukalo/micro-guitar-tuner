@@ -199,8 +199,3 @@ TODO test links
 - [STM32F411CE Datasheet](https://www.st.com/resource/en/datasheet/stm32f411ce.pdf)
 - [STM32F411CE Reference Manual](https://www.st.com/resource/en/reference_manual/rm0383-stm32f411xce-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
 
-
-TODO reorder everything
-
-TODO
-- mention how to run tests (emulation, graph outputs, etc.) (put this in test/README.md)
