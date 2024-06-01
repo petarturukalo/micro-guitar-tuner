@@ -17,12 +17,14 @@ assert_tests_objs = assert_tests.o assert.o file_source.o dsp_indirect.o
 libcore = ../core/libcore-A.a
 
 
+.NOTPARALLEL:
+
 all: $(gen_plots_bin) $(assert_tests_bin)
 
-$(gen_plots_bin): $(libcore) .WAIT $(gen_plot_objs) 
+$(gen_plots_bin): $(libcore) $(gen_plot_objs) 
 	$(CC) -o $@  $(gen_plot_objs) $(libcore) -lm
 
-$(assert_tests_bin): $(libcore) .WAIT $(assert_tests_objs) 
+$(assert_tests_bin): $(libcore) $(assert_tests_objs) 
 	$(CC) -o $@  $(assert_tests_objs) $(libcore) -lm
 
 $(libcore):

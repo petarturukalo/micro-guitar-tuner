@@ -142,15 +142,13 @@ static void test_cents_difference(void)
 static void assert_convert_adc_u12_sample_to_s16(uint16_t u12_sample, float32_t expected_s16_sample)
 {
 	float32_t actual_s16_sample = convert_adc_u12_sample_to_s16(u12_sample);
-	char *expected_str, *actual_str;
+	char expected_str[32], actual_str[32];
 
 	/* Convert to 2 decimal places to accept some tolerance. */
-	asprintf(&expected_str, "%.2f", expected_s16_sample);
-	asprintf(&actual_str, "%.2f", actual_s16_sample);
+	snprintf(expected_str, sizeof(expected_str), "%.2f", expected_s16_sample);
+	snprintf(actual_str, sizeof(actual_str), "%.2f", actual_s16_sample);
 	Assert(strcmp(expected_str, actual_str) == 0, "convert sample %u expected %s but was %s", 
 						      u12_sample, expected_str, actual_str);
-	free(expected_str);
-	free(actual_str);
 }
 
 static void test_convert_adc_u12_sample_to_s16(void)

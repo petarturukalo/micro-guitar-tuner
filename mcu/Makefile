@@ -23,10 +23,12 @@ libcore = ../core/libcore-M.a
 libopencm3 = libopencm3/lib/libopencm3_stm32f4.a
 
 
+.NOTPARALLEL:
+
 guitar-tuner.bin: guitar-tuner.elf
 	$(cross_prefix)objcopy -O binary $< $@
 
-guitar-tuner.elf: $(libcore) $(libopencm3) .WAIT $(objs)
+guitar-tuner.elf: $(libcore) $(libopencm3) $(objs)
 	$(CC) $(LDFLAGS) -o $@  $(objs) $(libcore) $(libopencm3) $(LDLIBS)
 	$(cross_prefix)size $@
 

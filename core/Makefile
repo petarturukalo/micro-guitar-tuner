@@ -42,8 +42,10 @@ objs := $(patsubst %.o,%-$(arm_arch_profile).o,$(objs))
 libcore = libcore-$(arm_arch_profile).a
 
 
-$(libcore): ../CMSIS-DSP/CMakeLists.txt .WAIT $(objs) 
-	$(cross_prefix)$(AR) rsc --thin $@ $^
+.NOTPARALLEL:
+
+$(libcore): ../CMSIS-DSP/CMakeLists.txt $(objs) 
+	$(cross_prefix)$(AR) rscT $@ $^
 
 %-$(arm_arch_profile).o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
