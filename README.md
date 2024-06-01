@@ -166,8 +166,7 @@ to the centre tic. An open string is in tune when the big tic is as close to the
 centre tic as it can get (see the [Frequency Resolution Limitation](https://github.com/petarturukalo/micro-guitar-tuner/tree/main?tab=readme-ov-file#frequency-resolution) 
 section below for why this reads as "as close to the centre tic as it can get").
 
-TODO show picture of it (with label saying that detected frequency is lower than
-nearest note (or other way around depending on picture)), or say to refer to video (or both)
+![Display](.images/display-example.jpg)
 
 
 # Limitations
