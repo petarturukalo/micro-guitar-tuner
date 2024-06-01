@@ -163,7 +163,7 @@ either side of the centre tic. The further to the left the big tic is from the c
 tic, the lower in frequency it is relative to the centre tic, and the further to the
 right the big tic is away from the centre tic, the higher in frequency it is relative
 to the centre tic. An open string is in tune when the big tic is as close to the 
-centre tic as it can get (see the [Frequency Resolution Limitations](https://github.com/petarturukalo/micro-guitar-tuner/tree/main?tab=readme-ov-file#frequency-resolution) 
+centre tic as it can get (see the [Frequency Resolution Limitation](https://github.com/petarturukalo/micro-guitar-tuner/tree/main?tab=readme-ov-file#frequency-resolution) 
 section below for why this reads as "as close to the centre tic as it can get").
 
 TODO show picture of it (with label saying that detected frequency is lower than
