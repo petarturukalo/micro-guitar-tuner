@@ -27,7 +27,7 @@ WARNING the generated plots take up a fair amount of disk space, ~150 MB.
 The `gen-freq-mag-plots` binary takes as input samples from all note audio file 
 sources in the `test/data/note/` dir and outputs plots to the `plot/` dir. Plots
 are generated using [gnuplot](http://www.gnuplot.info/), and so must be installed. 
-See `test/data/note/README.md` (TODO relative link?) for an explanation of the file 
+See the README in [`test/data/note/`](test/data/note) for an explanation of the file 
 format of the note file sources. Produced for each frame of samples is two plots,
 both showing the magnitude of the frequencies of the note in the frequency domain,
 one before HPS processing, and one after (see TODO top-level README DSP section for more info). 

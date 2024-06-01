@@ -125,8 +125,8 @@ the program, e.g. DSP, so that it can be tested completely separate of the
 MCU. 
 
 The `test/` directory contains sources to build binaries to programmatically
-test and visualise the core library. See `test/README.md` (TODO relative link?)
-for more info.
+test and visualise the core library. See the [`test/`](test) and its README for
+more info.
 
 The `mcu/` directory contains the MCU specific sources.
 
@@ -139,8 +139,8 @@ The `mcu/` directory contains the MCU specific sources.
 
 **External**
 - [GNU Octave](https://octave.org/) for generating filter coefficients. Needed to build the core library.
-- [gnuplot](http://www.gnuplot.info/) for (optionally) generating plots to visualise the DSP. See `test/README.md` (TODO relative link?)
-for more info.
+- [gnuplot](http://www.gnuplot.info/) for (optionally) generating plots to visualise the DSP. See the 
+[`test/`](test) and its README for more info.
 
 
 # Usage
