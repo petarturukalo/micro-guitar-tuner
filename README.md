@@ -62,8 +62,8 @@ configuration, just ensure to use a clean power supply because a dirty power sup
 as well (if at all).
 
 The current consumption of the program (load), tested when powered
-via ST-Link, is mostly ~7 mA with spikes up to 14 mA. TODO mention
-current when run off boost (if possible with [2]?)
+via ST-Link, is mostly ~7 mA with spikes up to 14 mA. TODO current
+off boost? getting 30 mA 
 
 Choice of battery is a 3.7V 600 mAh lipo (TODO hyperlink). The battery powers
 the MCU via 5V boost to its 5V pin instead of its 3.3V pin to take advantage 
@@ -85,8 +85,6 @@ Ensure the mic and display use separate 3V3 and ground pins because the
 voltage ripple and noise introduced by the display ruins the operation 
 of the mic. Also ensure the ground path back to the battery does not use 
 the mic's ground pin, as from testing it introduces noise into the ADC.
-
-TODO confirm the above is still the case with the new sparkfun boost? (should be)
 
 TODO show fritzing of all connections
 
