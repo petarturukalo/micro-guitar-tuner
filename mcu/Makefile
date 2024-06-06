@@ -32,10 +32,6 @@ guitar-tuner.elf: $(libcore) $(libopencm3) $(objs)
 	$(CC) $(LDFLAGS) -o $@  $(objs) $(libcore) $(libopencm3) $(LDLIBS)
 	$(cross_prefix)size $@
 
-# Build libopencm3 before guitar_tuner.c because it includes header libopencm3/stm32/f4/nvic.h 
-# which doesn't exist until libopencm3 is built.
-guitar_tuner.c: $(libopencm3)
-
 $(libcore):
 	$(MAKE) -C ../core
 
