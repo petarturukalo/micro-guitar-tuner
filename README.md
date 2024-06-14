@@ -78,8 +78,7 @@ TODO spacing between units? be consistent or doesn't matter?
 
 Ensure the mic and display use separate 3V3 and ground pins because the 
 voltage ripple and noise introduced by the display ruins the operation 
-of the mic. Also ensure the ground path back to the battery does not use 
-the mic's ground pin, as from testing it introduces noise into the ADC.
+of the mic. 
 
 TODO show fritzing of all connections
 
