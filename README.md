@@ -36,7 +36,7 @@ them together, and any caveats.
 - [STM32F411CEU6 "BlackPill" V3.0 25 MHz HSE](https://www.aliexpress.com/item/1005006127461676.html?spm=a2g0o.order_list.order_list_main.5.245e1802Adeg8t):
 note this AITEXM V3.0 board with "whited out" logo is NEEDED over a [V3.1 board with logo](https://www.aliexpress.com/item/1005001456186625.html)
 because its ADC is less noisy.
-- [Adafruit Electret Mic Amp MAX4466](https://core-electronics.com.au/electret-microphone-amplifier-max4466-with-adjustable-gain.html)
+- [Adafruit Electret Mic Amp MAX4466](https://www.adafruit.com/product/1063)
 - [I2C 128x64 SSD1306 OLED display](https://www.dfrobot.com/product-2017.html):
 any 128x64 SSD1306 OLED should work, but I use the DFRobot DFR0650 in particular, so it is preferred. Note by default the display code 
 writes to I2C slave address 0x3C, but this can be changed in code.
