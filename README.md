@@ -63,7 +63,7 @@ The current consumption of the program (load), tested when powered via 3V3 ST-Li
 mostly ~7 mA with spikes up to 14 mA. Off the boost however this increases drastically to 
 30 mA out of the 5V line, and totalling even higher when measuring current going into
 the boost, which can't be measured on this particular boost but with a different standalone 
-boost it measured ~80 mA ("oh well", at least it's rechargable).
+boost measured ~80 mA ("oh well", at least it's rechargable).
 
 ## Connections
 
