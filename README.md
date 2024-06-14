@@ -40,39 +40,30 @@ because its ADC is less noisy.
 - [I2C 128x64 SSD1306 OLED display](https://www.dfrobot.com/product-2017.html):
 any 128x64 SSD1306 OLED should work, but I use the DFRobot DFR0650 in particular, so it is preferred. Note by default the display code 
 writes to I2C slave address 0x3C, but this can be changed in code.
-
-- 3.7V 600 mAh lipo battery TODO?
-- SparkFun LiPo Charger/Booster 5V https://www.sparkfun.com/products/14411
-
-TODO fix up names of all parts to be more precise, and hyperlink all
-TODO introduce parts using their simple names "STM32 MCU board", "mic", "display", "battery"? or not?
+- [3.7V 600 mAh LiPo Battery](https://littlebirdelectronics.com.au/collections/batteries/products/lithium-ion-polymer-battery-3-7v-600mah)
+- [SparkFun LiPo Charger/Booster 5V](https://www.sparkfun.com/products/14411)
 
 ## Power
 
 This section describes how I have gone about powering this project, and
 so details a battery configuration that has been tested and known to work. 
-In the end battery configuration is up to you, so if you do use your own 
+In the end battery configuration is up to you: if you do use your own 
 configuration, just ensure to use a clean power supply because a dirty power supply 
 (e.g. ST-Link) will introduce noise into the ADC and the program won't work 
 as well (if at all).
 
-The current consumption of the program (load), tested when powered
-via ST-Link, is mostly ~7 mA with spikes up to 14 mA. TODO current
-off boost? getting 30 mA 
+The 3.7V 600 mAh LiPo battery powers the MCU via 5V boost to its 5V pin instead of 
+its 3.3V pin to take advantage of its on-board 3.3V regulator. The 5V output boost
+combines a charging circuit, 5V boost, and on/off switch all in one module. 
+The charger is so that the battery doesn't have to be detached in order to be recharged. 
+The boost takes a 0.9-4.75V input voltage range, which satisfies the 3-4.2V voltage range 
+of the LiPo.
 
-Choice of battery is a 3.7V 600 mAh lipo (TODO hyperlink). The battery powers
-the MCU via 5V boost to its 5V pin instead of its 3.3V pin to take advantage 
-of its on-board 3.3V regulator.
-
-Choice of 5V output boost (TODO hyperlink) is because it combines a charging 
-circuit, 5V boost, and on/off switch all in one module. The charger is 
-so that the battery doesn't have to be detached in order to be recharged. 
-The boost takes a 0.9-4.75V input voltage range, which satisfies the 
-3-4.2V voltage range of the lipo.
-
-TODO capitalise lipo? (LiPo?)
-TODO voltage range of lipo correct? or goes even lower?
-TODO spacing between units? be consistent or doesn't matter?
+The current consumption of the program (load), tested when powered via 3V3 ST-Link, is 
+mostly ~7 mA with spikes up to 14 mA. Off the boost however this increases drastically to 
+30 mA out of the 5V line, and totalling even higher when measuring current going into
+the boost, which I can't measure on this particular boost but with a different standalone 
+boost it measured ~80 mA ("oh well", at least it's rechargable).
 
 ## Connections
 
