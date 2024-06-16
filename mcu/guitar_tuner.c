@@ -88,7 +88,7 @@ static void timer_init(void)
 }
 
 /*
- * Initialise the ADC to do a single conversion on regular channel ADC1 (pin PA1) when externally
+ * Initialise the ADC (ADC1) to do a single conversion on regular channel 1 (pin PA1) when externally
  * triggered by the timer 2 (TIM2) trigger output (TRGO). End of conversion interrupt is enabled
  * and handled by adc_isr(). 
  */
