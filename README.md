@@ -69,7 +69,8 @@ boost measured ~80 mA ("oh well", at least it's rechargable).
 
 Ensure the mic and display use separate 3V3 and ground pins because the 
 voltage ripple and noise introduced by the display ruins the operation 
-of the mic. 
+Of the mic. Also ensure the ground path back to the battery does not use 
+the mic's ground pin, as from testing it can introduce noise into the ADC.
 
 TODO show fritzing of all connections
 
