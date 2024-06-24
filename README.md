@@ -2,7 +2,7 @@
 
 A microcontroller (STM32) guitar tuner.
 
-<video src="https://www.youtube.com/watch?v=JDhY7y5XZns"></video>
+[![demo](https://img.youtube.com/vi/JDhY7y5XZns/0.jpg)](https://www.youtube.com/watch?v=JDhY7y5XZns)
 
 
 # Motivation
