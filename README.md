@@ -1,6 +1,6 @@
 # Description
 
-A microcontroller (STM32) guitar tuner.
+A microcontroller (STM32) guitar tuner. (Click following image for video demonstration.)
 
 [![demo](https://img.youtube.com/vi/JDhY7y5XZns/0.jpg)](https://www.youtube.com/watch?v=JDhY7y5XZns)
 
