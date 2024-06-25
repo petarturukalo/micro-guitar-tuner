@@ -72,7 +72,10 @@ voltage ripple and noise introduced by the display ruins the operation
 of the mic. Also ensure the ground path back to the battery does not use 
 the mic's ground pin, as from testing it can introduce noise into the ADC.
 
-TODO show fritzing of all connections
+![fritzing](.images/fritzing.png)
+TODO 
+- give a summary of the pin conections
+- note the display and battery in the fritzing image aren't exactly the same as mine
 
 
 # DSP
