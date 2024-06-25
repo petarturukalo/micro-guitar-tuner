@@ -148,12 +148,11 @@ the nearest note (frequency increases left to right along the slider).
 For example, in the below image the nearest detected note is G3, and because the big tic is to
 the left of the centre tic, the detected frequency is lower than and out of tune with the G3 reference. 
 To get it in tune, tune up until the big tic is as close to the centre tic as it can get (see also the [Frequency Resolution Limitation](https://github.com/petarturukalo/micro-guitar-tuner/tree/main?tab=readme-ov-file#frequency-resolution) 
-section for caveats in getting the big tic aligned with the centre tic).
+section for caveats in getting the big tic aligned with the centre tic). Note one pixel on 
+the slider is one cent, and there is up to 50 cents either side of the centre tic. 
 
 ![Display](.images/display-example.jpg)
 
-Note one pixel on the slider is one cent, and there is up to 50 cents either side of the 
-centre tic. 
 
 
 # Limitations
