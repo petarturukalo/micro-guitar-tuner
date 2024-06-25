@@ -67,15 +67,17 @@ boost measured ~80 mA ("oh well", at least it's rechargable).
 
 ## Connections
 
-Ensure the mic and display use separate 3V3 and ground pins because the 
-voltage ripple and noise introduced by the display ruins the operation 
-of the mic. Also ensure the ground path back to the battery does not use 
-the mic's ground pin, as from testing it can introduce noise into the ADC.
-
 ![fritzing](.images/fritzing.png)
-TODO 
-- give a summary of the pin conections
-- note the display and battery in the fritzing image aren't exactly the same as mine
+
+- Ensure the mic and display use separate 3V3 and ground pins because the 
+voltage ripple and noise introduced by the display ruins the operation 
+of the mic. 
+- Also ensure the ground path back to the battery does not use 
+the mic's ground pin, as from testing it can introduce noise into the ADC.
+- Connect the board's A1 pin to the mic's OUT pin.
+- Connect the board's PB9 pin to the display's SCK/SCL pin, and PB8 to SDA.
+- Note the display in this image isn't the exact same as mine and that the actual
+battery is 600 mAh not 110 mAh.
 
 
 # DSP
