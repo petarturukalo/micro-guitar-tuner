@@ -75,7 +75,7 @@ of the mic.
 - Also ensure the ground path back to the battery does not use 
 the mic's ground pin, as from testing it can introduce noise into the ADC.
 - Connect the board's A1 pin to the mic's OUT pin.
-- Connect the board's B9 pin to the display's SCK/SCL pin, and B8 to SDA.
+- Connect the board's B9 pin to the display's SDA pin, and B8 to SCK/SCL.
 - Note the display in this image isn't the exact same as mine and that the actual
 battery is 600 mAh not 110 mAh.
 
