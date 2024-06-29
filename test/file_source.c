@@ -41,7 +41,7 @@ static int file_size(int fd)
 
 /*
  * Run a function on a stream of samples sourced from a file. 
- * See data/note/README.md for an explanation of the format of a file source.
+ * See data/{note,sine}/README.md for an explanation of the format of a file source.
  * The samples in the file are split into oversized frames of length 
  * frame_len*OVERSAMPLING_FACTOR samples, and process_samples called once on each 
  * frame until there aren't enough samples left in the file to fill a whole frame.
@@ -104,8 +104,8 @@ static bool file_source(const char *pathname, enum frame_length frame_len,
 	return ret;
 }
 
-static bool for_each_file_source(const char *file_source_dir, enum frame_length frame_len, 
-				 process_samples_fn process_samples)
+bool for_each_file_source(const char *file_source_dir, enum frame_length frame_len, 
+			  process_samples_fn process_samples)
 {
 	DIR *dir;
 	struct dirent *dirent;
@@ -132,15 +132,5 @@ static bool for_each_file_source(const char *file_source_dir, enum frame_length 
 	}
 	closedir(dir);
 	return ret;
-}
-
-bool for_each_note_file_source(enum frame_length frame_len, process_samples_fn process_samples)
-{
-	return for_each_file_source(NOTE_FILES_DIR, frame_len, process_samples);
-}
-
-bool for_each_sine_file_source(enum frame_length frame_len, process_samples_fn process_samples)
-{
-	return for_each_file_source(SINE_FILES_DIR, frame_len, process_samples);
 }
 

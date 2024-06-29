@@ -22,10 +22,10 @@ typedef bool (*process_samples_fn)(
 	enum frame_length frame_len);  /* Number of samples is frame_len*OVERSAMPLING_FACTOR. */
 
 /*
- * Run file_source() on each file source in the NOTE_FILES_DIR or SINE_FILES_DIR
- * directory. See file_source() for more info.
+ * Run file_source() on each file source in the `file_source_dir` directory. 
+ * See file_source() for more info.
  */
-bool for_each_note_file_source(enum frame_length frame_len, process_samples_fn process_samples);
-bool for_each_sine_file_source(enum frame_length frame_len, process_samples_fn process_samples);
+bool for_each_file_source(const char *file_source_dir, enum frame_length frame_len, 
+			  process_samples_fn process_samples);
 
 #endif

@@ -193,14 +193,99 @@ static void test_bit_array_2d_copy(void)
 					      0b11100000,0b00000001,0b10000000 });
 }
 
+
+static struct anti_alias_sine {
+	float32_t frequency;
+	float32_t max_magnitude;
+} anti_alias_sines[] = {
+/* 
+ * Each entry is for a sine wave file in directory `data/sine/anti-alias`,
+ * and will have its `max_magnitude` field filled by get_anti_alias_sine_mag().
+ */
+	{ 200, 0 },
+	{ 600, 0 },
+	{ 1000, 0 },
+	{ 1400, 0 },
+	{ 1800, 0 },
+/* 
+ * Below are below the cutoff frequency and after the end of the cutoff slope 
+ * and should be aliased. 
+ */
+	{ 2200, 0 },
+	{ 2600, 0 },
+	{ 3000, 0 },
+	{ 3400, 0 },
+	{ 3800, 0 },
+	{ 0, 0 }
+};
+
+static struct anti_alias_sine *anti_alias_sine_lookup_by_freq(float32_t frequency)
+{
+	struct anti_alias_sine *sine = anti_alias_sines;
+	for (; sine->frequency; ++sine) {
+		if (frequency == sine->frequency)
+			return sine;
+	}
+	return NULL;
+}
+
+/* Populate the `max_magnitude` field of the sine in `anti_alias_sines` with matching frequency. */
+static bool get_anti_alias_sine_mag(const char *sine_freq_str, int i, const int16_t *samples, enum frame_length frame_len)
+{
+	float32_t sine_freq;
+	float32_t *freq_bin_magnitudes;
+	int max_bin_ind;
+	struct anti_alias_sine *sine;
+
+	sscanf(sine_freq_str, "%f", &sine_freq);
+	sine = anti_alias_sine_lookup_by_freq(sine_freq);
+	Assert(sine, "sine wave file %s no entry in anti_alias_sines", sine_freq_str);
+	if (sine) {
+		if (i == 1)
+			samples_to_freq_bin_magnitudes_init(frame_len);
+		freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
+		max_bin_ind = max_bin_index(freq_bin_magnitudes, frame_len);
+		sine->max_magnitude = freq_bin_magnitudes[max_bin_ind];
+	}
+	return true;
+}
+
+/* Assert sine waves with frequency above the low-pass filter cutoff frequency do not alias. */
+static void test_sine_wave_anti_alias(void)
+{
+	struct anti_alias_sine *sine;
+	float64_t average_non_aliased_mag = 0;
+	float32_t aliased_mag_thresh;
+	const int lowpass_cutoff_freq = nyquist_frequency(SAMPLING_RATE);
+	
+	for_each_file_source(SINE_FILES_DIR "/anti-alias", FRAME_LEN_4096, get_anti_alias_sine_mag);
+	
+	/* Get average max magnitude of all non-aliased magnitudes. */
+	sine = anti_alias_sines;
+	for (; sine->frequency <= lowpass_cutoff_freq; ++sine) 
+		average_non_aliased_mag += sine->max_magnitude;
+	average_non_aliased_mag /= sine-anti_alias_sines;
+
+	/* Calculation gotten by looking at graphs of the aliased sines. */
+	aliased_mag_thresh = average_non_aliased_mag/1000;  
+
+	/* Assert all sines with frequency above the cutoff frequency are aliased. */
+	for (; sine->frequency; ++sine) {
+		Assert(sine->frequency > lowpass_cutoff_freq, "sine %f not above cutoff freq %d", sine->frequency, lowpass_cutoff_freq);
+		Assert(sine->max_magnitude <= aliased_mag_thresh, "sine %f did not get aliased", sine->frequency);
+	}
+}
+
+
 int main(void)
 {
-	for_each_sine_file_source(FRAME_LEN_4096, assert_sine_wave_freq_to_bin_index);
+	for_each_file_source(SINE_FILES_DIR "/freq-to-bin-index", FRAME_LEN_4096, assert_sine_wave_freq_to_bin_index);
 	test_hps_find_harmonic_peaks();
-	for_each_note_file_source(FRAME_LEN_4096, assert_hps);
+	for_each_file_source(NOTE_FILES_DIR, FRAME_LEN_4096, assert_hps);
 	test_cents_difference();
 	test_convert_adc_u12_sample_to_s16();
 	test_bit_array_2d_copy();
+	test_sine_wave_anti_alias();
 
 	return !print_asserts_summary();
 }

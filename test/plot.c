@@ -95,7 +95,7 @@ static bool plot_note_freq_bin_magnitudes_hps(const char *note_name, int i,
 
 int main(void)
 {
-	return !for_each_note_file_source(FRAME_LEN_4096, plot_note_freq_bin_magnitudes) ||
-	       !for_each_note_file_source(FRAME_LEN_4096, plot_note_freq_bin_magnitudes_hps);
+	return !for_each_file_source(NOTE_FILES_DIR, FRAME_LEN_4096, plot_note_freq_bin_magnitudes) ||
+	       !for_each_file_source(NOTE_FILES_DIR, FRAME_LEN_4096, plot_note_freq_bin_magnitudes_hps);
 }
 

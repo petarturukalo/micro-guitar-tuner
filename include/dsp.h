@@ -81,6 +81,7 @@ float32_t bin_width(enum frame_length frame_len, int sampling_rate);
 /* Get the index of the bin which the frequency falls into. */
 int freq_to_bin_index(float32_t frequency, float32_t binwidth);
 float32_t bin_index_to_freq(int bin_index, float32_t binwidth);
+int nyquist_frequency(int sampling_rate);
 
 /* Number of harmonics can't be too high otherwise the new product value will overflow. */
 #define NHARMONICS 4

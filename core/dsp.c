@@ -83,6 +83,11 @@ float32_t bin_index_to_freq(int bin_index, float32_t binwidth)
 	return bin_index*binwidth;
 }
 
+int nyquist_frequency(int sampling_rate)
+{
+	return sampling_rate/2;
+}
+
 /*
  * This implements A. Michael Noll's Harmonic Product Spectrum formula
  *
