@@ -209,7 +209,7 @@ static struct anti_alias_sine {
 	{ 1800, 0 },
 /* 
  * Below are below the cutoff frequency and after the end of the cutoff slope 
- * and should be aliased. 
+ * and would alias if not filtered out.
  */
 	{ 2200, 0 },
 	{ 2600, 0 },
@@ -260,16 +260,19 @@ static void test_sine_wave_anti_alias(void)
 	
 	for_each_file_source(SINE_FILES_DIR "/anti-alias", FRAME_LEN_4096, get_anti_alias_sine_mag);
 	
-	/* Get average max magnitude of all non-aliased magnitudes. */
+	/* Get average max magnitude of all non-aliasing magnitudes. */
 	sine = anti_alias_sines;
 	for (; sine->frequency <= lowpass_cutoff_freq; ++sine) 
 		average_non_aliased_mag += sine->max_magnitude;
 	average_non_aliased_mag /= sine-anti_alias_sines;
 
-	/* Calculation gotten by looking at graphs of the aliased sines. */
+	/* 
+	 * Calculation gotten by looking at graphs of the aliased sines. 
+	 * The aliases aren't removed entirely, just small enough to be negligible.
+	 */
 	aliased_mag_thresh = average_non_aliased_mag/1000;  
 
-	/* Assert all sines with frequency above the cutoff frequency are aliased. */
+	/* Assert all sines with frequency above the cutoff frequency do not alias. */
 	for (; sine->frequency; ++sine) {
 		Assert(sine->frequency > lowpass_cutoff_freq, "sine %f not above cutoff freq %d", sine->frequency, lowpass_cutoff_freq);
 		Assert(sine->max_magnitude <= aliased_mag_thresh, "sine %f did not get aliased", sine->frequency);
