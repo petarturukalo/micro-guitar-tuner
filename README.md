@@ -86,7 +86,7 @@ The following lists the DSP steps involved in processing an oversampled "frame" 
 detected note. 
 
 1. Apply a band-pass filter, mostly for its low-pass (anti-aliasing) filter part to cut off frequencies 
-above the Nyquist frequency of the sampling rate after decimation, to prevent aliasing. To visualise 
+above the Nyquist frequency of the post-decimation sampling rate, to prevent aliasing. To visualise 
 the filter with GNU Octave, run `make -C core plot-filter-coeffs`.
 2. Decimate down from the oversampling rate to the sampling rate proper, so the sampling rate is closer
 to the max frame length to meet a reasonable frequency/time resolution tradeoff. See also comment at
