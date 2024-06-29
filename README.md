@@ -112,16 +112,14 @@ generating these plots on the test data yourself.
 
 # Directory Structure
 
-The `core/` directory holds sources for the core library, and `include/` its
+- The `core/` directory holds sources for the core library, and `include/` its
 headers/API. The core library implements the non-MCU (core) functionality of
 the program, e.g. DSP, so that it can be tested completely separate of the 
 MCU. 
-
-The `test/` directory contains sources to build binaries to programmatically
+- The `test/` directory contains sources to build binaries to programmatically
 test and visualise the core library. See the [`test/`](test) dir and its README for
 more info.
-
-The `mcu/` directory contains the MCU specific sources.
+- The `mcu/` directory contains the MCU specific sources.
 
 
 # Dependent Software
