@@ -24,8 +24,8 @@ CFLAGS += -Ofast
 # Objects local to the core lib.
 objs = dsp.o note.o adc.o filter_coeffs.o 2d_bit_array.o
 # Dependent CMSIS DSP objects.
-objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_init_f32.o \
-	../CMSIS-DSP/Source/FilteringFunctions/arm_fir_f32.o \
+objs += ../CMSIS-DSP/Source/FilteringFunctions/arm_fir_decimate_init_f32.o \
+	../CMSIS-DSP/Source/FilteringFunctions/arm_fir_decimate_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_rfft_fast_init_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_rfft_fast_f32.o \
 	../CMSIS-DSP/Source/TransformFunctions/arm_cfft_init_f32.o \
@@ -51,7 +51,7 @@ $(libcore): ../CMSIS-DSP/CMakeLists.txt $(objs)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 filter_coeffs.c: print_filter_coeffs.m gen_filter_coeffs.m
-	octave print_filter_coeffs.m $(oversampling_rate) $(nr_taps) > $@
+	octave print_filter_coeffs.m $(oversampling_rate) $(nr_taps) $(oversampling_factor) > $@
 
 ../CMSIS-DSP/CMakeLists.txt:
 	git submodule update --init
@@ -60,5 +60,5 @@ clean:
 	rm $(objs) filter_coeffs.c $(libcore)
 
 plot-filter-coeffs: plot_filter_coeffs.m gen_filter_coeffs.m
-	octave plot_filter_coeffs.m $(oversampling_rate) $(nr_taps)
+	octave plot_filter_coeffs.m $(oversampling_rate) $(nr_taps) $(oversampling_factor)
 

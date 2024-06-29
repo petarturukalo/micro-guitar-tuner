@@ -82,20 +82,24 @@ battery is 600 mAh not 110 mAh.
 
 # DSP
 
-The following lists the DSP steps involved in processing a "frame" of audio samples for a detected note.
+The following lists the DSP steps involved in processing an oversampled "frame" of audio samples for a 
+detected note. 
 
 1. Apply a band-pass filter, mostly for its low-pass (anti-aliasing) filter part to cut off frequencies 
-above the Nyquist frequency and prevent aliasing. To visualise the filter with GNU Octave, run
-`make -C core plot-filter-coeffs`.
-2. Run FFT to convert samples from time domain to frequency domain.
-3. Convert the complex number output of the FFT to magnitudes to get the energy of the spectra.
+above the Nyquist frequency of the sampling rate after decimation, to prevent aliasing. To visualise 
+the filter with GNU Octave, run `make -C core plot-filter-coeffs`.
+2. Decimate down from the oversampling rate to the sampling rate proper, so the sampling rate is closer
+to the max frame length to meet a reasonable frequency/time resolution tradeoff. See also comment at
+`include/dsp.h:SAMPLING_RATE`.
+3. Run FFT to convert samples from time domain to frequency domain.
+4. Convert the complex number output of the FFT to magnitudes to get the energy of the spectra.
 The following plot depicts the magnitude data after completion of this step for audio samples of
 note G3. Notice there are harmonic peaks at integer multiples of the fundamental frequency (the 
 fundamental frequency of G3 is 195.998 Hz).
 
 ![G3](.images/G3-1.svg)
 
-4. Apply a Harmonic Product Spectrum (HPS) to the magnitudes to turn the fundamental frequency peak 
+5. Apply a Harmonic Product Spectrum (HPS) to the magnitudes to turn the fundamental frequency peak 
 into the maximum peak. This is done because the maximum peak isn't necessarily the fundamental, and may 
 be a different harmonic, as is the case in the above plot. After HPS the plot now looks like the 
 following, with the fundamental now the maxmimum peak. See the [`test/`](test) dir and its README for 
@@ -103,7 +107,7 @@ generating these plots on the test data yourself.
 
 ![G3 after HPS](.images/G3-hps-1.svg)
 
-5. Select the frequency bin with the max magnitude as the detected frequency.
+6. Select the frequency bin with the max magnitude as the detected frequency.
 
 
 # Directory Structure
@@ -173,7 +177,7 @@ notes like open E2 on the low E string. This is just a shortcoming of the FFT.
 
 ## Higher Notes
 
-See comment at G#4 at `core/note.c:note_freqs`.
+See comment at B4 at `core/note.c:note_freqs`.
 
 
 # Resources

@@ -17,14 +17,15 @@
 #include "debug.h"
 
 #define FRAME_LEN  FRAME_LEN_4096
+#define OVER_FRAME_LEN  (FRAME_LEN*OVERSAMPLING_FACTOR)
 /* The ADC regular data register data field is 16 bits wide, but the sample is 12 bits. */
 #define ADC_DR_DATA_MASK 0x00000fff
 
 /*
- * This is a circular buffer storing 2 frames worth of samples so that one frame can
+ * This is a circular buffer storing 2 oversized frames worth of samples so that one frame can
  * be filled while the other full frame is being processed.
  */
-static volatile float32_t samples[FRAME_LEN*2];
+static volatile float32_t samples[OVER_FRAME_LEN*2];
 static volatile float32_t *volatile full_samples_frame = NULL;
 
 /*
@@ -40,9 +41,9 @@ void adc_isr(void)
 	samples[i++] = convert_adc_u12_sample_to_s16(adc_read_regular(ADC1)&ADC_DR_DATA_MASK);
 
 	/* If just finished filling a frame of samples. */
-	if (i%FRAME_LEN == 0) {
-		full_samples_frame = samples+(i-FRAME_LEN);
-		if (i == FRAME_LEN*2)
+	if (i%OVER_FRAME_LEN == 0) {
+		full_samples_frame = samples+(i-OVER_FRAME_LEN);
+		if (i == OVER_FRAME_LEN*2)
 			i = 0;
 	}
 }
@@ -60,7 +61,7 @@ static void timer2_set_sampling_rate(void)
 	 *
 	 * Note also the counter clock is lowered rather than raising the timer period in order to save power.
 	 */
-	const int clock_div = 1500;
+	const int clock_div = 750;
 	timer_set_prescaler(TIM2, clock_div-1);
 	timer_set_period(TIM2, 1);
 
@@ -209,16 +210,16 @@ static void processing_init(void)
 
 /*
  * Continuously wait for a frame of samples to be filled, then processing the full frame for
- * a detected closest note and showing it on the display. Because the sampling rate (OVERSAMPLING_RATE)
- * is 4000 and the frame length (FRAME_LEN) is 4096, it will take 4096/4000 = 1.024 seconds to
- * fill a frame. The processing of a frame from testing then takes around 0.092 seconds.
+ * a detected closest note and showing it on the display. Because after decimation the sampling rate 
+ * (SAMPLING_RATE) is 4000 and the frame length (FRAME_LEN) is 4096, it will take 4096/4000 = 1.024 
+ * seconds to fill a frame. The processing of a frame from testing then takes around 0.09 seconds.
  */
 static void processing_start(void)
 {
 	float32_t *freq_bin_magnitudes;
 	int max_bin_ind;
 	float32_t frequency; 
-	
+
 	for (;;) {
 		/* Wait for sampler to fill frame. See adc_isr(). */
 		do {
@@ -226,10 +227,10 @@ static void processing_start(void)
 		} while (!full_samples_frame);
 
 		/* DSP. */
-		freq_bin_magnitudes = samples_to_freq_bin_magnitudes((const float32_t *)full_samples_frame, FRAME_LEN);
-		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN, OVERSAMPLING_RATE);
+		freq_bin_magnitudes = samples_to_freq_bin_magnitudes((float32_t *)full_samples_frame, FRAME_LEN);
+		harmonic_product_spectrum(freq_bin_magnitudes, FRAME_LEN, SAMPLING_RATE);
 		max_bin_ind = max_bin_index(freq_bin_magnitudes, FRAME_LEN);
-		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN, OVERSAMPLING_RATE));
+		frequency = bin_index_to_freq(max_bin_ind, bin_width(FRAME_LEN, SAMPLING_RATE));
 
 		/*
 		 * Only display a note if the reading is strong enough, in order to filter out readings where there is

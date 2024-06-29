@@ -79,18 +79,18 @@ struct note_freq note_freqs[] = {
  */
 	{ "G4",  391.995 },
 	{ "G#4", 415.305 },
+	{ "A4",  440 },
+	{ "A#4", 466.164 },
+	{ "B4",  493.883 },
 /*
- * Ending at G#4 is the highest note expected to be reliably handled because 
- * its 4th harmonic is below the 1700 Hz cutoff frequency defined at 
- * gen_filter_coeffs.m:lowpass_cutoff_freq, and HPS uses 4 harmonics (see NHARMONICS).
+ * Ending at B4 is the highest note expected to be reliably handled because 
+ * its 4th harmonic is below the 2000 Hz cutoff frequency defined by the anti-aliasing
+ * filter implemented in gen_filter_coeffs.m, and HPS uses 4 harmonics (see NHARMONICS).
  *
  * This doesn't affect getting the open strings in tune, which is the main use
  * case of this tuner, but may cause issues if trying to test the intonation 
  * of the high E string e.g. when checking its pitch at fret 12.
  */
-	{ "A4",  440 },
-	{ "A#4", 466.164 },
-	{ "B4",  493.883 },
 
 	{ "C5",  523.251 },
 	{ "C#5", 554.365 },
@@ -114,8 +114,11 @@ struct note_freq note_freqs[] = {
 	{ "F#6", 1479.978 },
 	{ "G6",  1567.982 },
 	{ "G#6", 1661.219 },
+	{ "A6",  1760 },
+	{ "A#6", 1864.655 },
+	{ "B6",  1975.533 },
 /*
- * Ending at G#6 is the highest note with fundamental frequency / first harmonic below
+ * Ending at B6 is the highest note with fundamental frequency / first harmonic below
  * the cutoff frequency.
  */
 	{ 0 }

@@ -32,7 +32,8 @@ include ../core/dsp_params.mk
 
 export CC = $(cross_prefix)gcc
 export CFLAGS = -iquote ../include -I../CMSIS-DSP/Include -I../CMSIS_6/CMSIS/Core/Include \
-		-DOVERSAMPLING_RATE_FROM_MAKEFILE=$(oversampling_rate)
+		-DSAMPLING_RATE_FROM_MAKEFILE=$(sampling_rate) \
+		-DOVERSAMPLING_FACTOR_FROM_MAKEFILE=$(oversampling_factor)
 # Only explicitly define __ARM_ARCH_PROFILE for Cortex-A because Cortex-M has it
 # implicitly defined through its -mcpu option, and we don't want to redefine it.
 ifneq ($(arm_arch_profile), M)

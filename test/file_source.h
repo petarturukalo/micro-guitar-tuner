@@ -12,14 +12,14 @@
 #define SINE_FILES_DIR "data/sine"
 
 /* 
- * Function that processes a frame of samples from a file source. 
+ * Function that processes an oversized frame of samples from a file source. 
  * Return false on error.
  */
 typedef bool (*process_samples_fn)(
 	const char *filename,  /* Excluding .raw extension. */
 	int i,  /* 1-indexed frame number from the start of the file source. */
 	const int16_t *samples, 
-	enum frame_length frame_len);  /* Number of samples. */
+	enum frame_length frame_len);  /* Number of samples is frame_len*OVERSAMPLING_FACTOR. */
 
 /*
  * Run file_source() on each file source in the NOTE_FILES_DIR or SINE_FILES_DIR

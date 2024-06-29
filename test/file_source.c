@@ -42,9 +42,9 @@ static int file_size(int fd)
 /*
  * Run a function on a stream of samples sourced from a file. 
  * See data/note/README.md for an explanation of the format of a file source.
- * The samples in the file are split into frames of size frame_len samples, 
- * and process_samples called once on each frame until there aren't enough 
- * samples left in the file to fill a whole frame.
+ * The samples in the file are split into oversized frames of length 
+ * frame_len*OVERSAMPLING_FACTOR samples, and process_samples called once on each 
+ * frame until there aren't enough samples left in the file to fill a whole frame.
  */
 static bool file_source(const char *pathname, enum frame_length frame_len,
 			process_samples_fn process_samples)
@@ -54,6 +54,7 @@ static bool file_source(const char *pathname, enum frame_length frame_len,
 	char *filename;
 	int remaining_samples;
 	bool ret = true;
+	const int oversize_frame_len = frame_len*OVERSAMPLING_FACTOR;
 
 	fd = open(pathname, O_RDONLY);
 	if (fd == -1) {
@@ -66,7 +67,7 @@ static bool file_source(const char *pathname, enum frame_length frame_len,
 		close(fd);
 		return false;
 	}
-	samples = malloc(frame_len*sample_size);
+	samples = malloc(oversize_frame_len*sample_size);
 	if (!samples) {
 		fprintf(stderr, "Error allocating memory to store samples in: %s\n", strerror(errno));
 		close(fd);
@@ -78,15 +79,15 @@ static bool file_source(const char *pathname, enum frame_length frame_len,
 
 	remaining_samples = fsz/sample_size;
 
-	for (int i = 1; remaining_samples >= frame_len; ++i) {
+	for (int i = 1; remaining_samples >= oversize_frame_len; ++i) {
 		/* Read frame of samples. */
-		int bytes_read = read(fd, samples, frame_len*sample_size);
+		int bytes_read = read(fd, samples, oversize_frame_len*sample_size);
 		if (bytes_read == -1) {
 			fprintf(stderr, "Error reading from file source %s: %s\n", filename, strerror(errno));
 			ret = false;
 			break;
 		}
-		if (bytes_read != frame_len*sample_size) {
+		if (bytes_read != oversize_frame_len*sample_size) {
 			fprintf(stderr, "Error: failed to read full frame of samples\n");
 			ret = false;
 			break;
@@ -96,7 +97,7 @@ static bool file_source(const char *pathname, enum frame_length frame_len,
 			ret = false;
 			break;
 		}
-		remaining_samples -= frame_len;
+		remaining_samples -= oversize_frame_len;
 	}
 	free(samples);
 	close(fd);

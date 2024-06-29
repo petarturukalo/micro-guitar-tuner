@@ -9,18 +9,19 @@
 #include <arm_math_types.h>
 
 /*
- * The actual sampling rate, after oversampling. The "original" sampling rate
- * is defined as twice the highest frequency which I intend to handle in this
- * tuner (Nyquist theorem). That cutoff frequency (Nyquist frequency) is defined 
- * at core/gen_filter_coeffs.m:lowpass_cutoff_freq as 1700 Hz, which twice of 
- * gives a 3400 Hz sampling rate. The actual sampling rate is a bit over this
- * (hence oversampling), to 1. reduce quantization noise / improve SNR, and 2. 
- * to meet a reasonable frequency/time resolution tradeoff (see explanation at bin_width()) 
- * when paired with the frame length.
- * 
- * See also comments at '../core/note.c:note_freqs'.
+ * SAMPLING_RATE is the sampling rate after decimation down from the OVERSAMPLING_RATE. 
+ * Oversampling is done to prevent some aliasing as it allows capture of an OVERSAMPLING_FACTOR times 
+ * larger frequency bandwidth than that of the SAMPLING_RATE. These extra frequencies above 
+ * the Nyquist frequency of the SAMPLING_RATE, which would have caused aliasing when sampling
+ * directly at the SAMPLING_RATE, can be low-pass filtered out before decimation.
+ *
+ * Although it's the decimation that introduces the aliasing of the higher captured frequencies
+ * in the first place, it is done in order to get the sampling rate closer to the max frame 
+ * length to meet a reasonable frequency/time resolution tradeoff (see explanation at bin_width()).
  */
-#define OVERSAMPLING_RATE  OVERSAMPLING_RATE_FROM_MAKEFILE
+#define SAMPLING_RATE  SAMPLING_RATE_FROM_MAKEFILE
+#define OVERSAMPLING_FACTOR  OVERSAMPLING_FACTOR_FROM_MAKEFILE
+#define OVERSAMPLING_RATE  (SAMPLING_RATE*OVERSAMPLING_FACTOR)
 
 /* 
  * FFT frame lengths (number of samples in a frame). 
@@ -45,23 +46,29 @@ enum frame_length {
 
 
 /*
- * Transform a frame of audio samples in the time domain to and return the 
+ * Transform an oversized frame of audio samples in the time domain to and return the 
  * frequency bin magnitudes (energy) of its spectra in the frequency domain. 
- * Note the return is a static buffer and will trash the previous return when
- * called in sequence.
  *
- * The frequency bandwidth (frequencies from 0 to half the OVERSAMPLNG_RATE)
+ * The oversized frame of samples is of length frame_len*OVERSAMPLING_FACTOR, and it is 
+ * assumed the samples were captured at an oversampling rate of OVERSAMPLING_RATE.
+ * Prior to FFT the oversized frame is low-pass filtered and then decimated down to the
+ * original SAMPLING_RATE and frame_len. See comment at SAMPLING_RATE for why oversampling
+ * is done at all. 
+ *
+ * The frequency bandwidth (frequencies from 0 to half the SAMPLING_RATE)
  * are split across nr_bins() frequency bins (hence the returned array is also
  * of length nr_bins()). The frequency range of bin at index i spans bin_width() Hz
  * and is centred about frequency i*bin_width() (see also bin_index_to_freq()). 
  * Bins start at index 1 because index 0 is for the DC offset and can be ignored.
  *
- * Note a band-pass filter is also applied, its low-pass (anti-aliasing) filter part 
- * done specifically to cut off frequencies above the Nyquist frequency and prevent
- * aliasing (see ../core/gen_filter_coeffs.m and OVERSAMPLING_RATE for more info). 
+ * WARNING
+ * - The input samples array is reused and trashed by the implementation of this function in
+ *   order to save MCU RAM space.
+ * - The return is a static buffer and will trash the previous return when
+ *   called in sequence.
  */
 void samples_to_freq_bin_magnitudes_init(enum frame_length frame_len);
-float32_t *samples_to_freq_bin_magnitudes(const float32_t *samples, enum frame_length frame_len);
+float32_t *samples_to_freq_bin_magnitudes(float32_t *samples, enum frame_length frame_len);
 
 int nr_bins(enum frame_length frame_len);
 int bandwidth(int sampling_rate);

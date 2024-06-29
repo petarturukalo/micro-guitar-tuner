@@ -25,11 +25,11 @@ static bool assert_sine_wave_freq_to_bin_index(const char *sine_freq_str, int i,
 	if (i == 1)
 		samples_to_freq_bin_magnitudes_init(frame_len);
 	freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
-	expected_bin_index = freq_to_bin_index(sine_freq, bin_width(frame_len, OVERSAMPLING_RATE));
+	expected_bin_index = freq_to_bin_index(sine_freq, bin_width(frame_len, SAMPLING_RATE));
 	actual_bin_index = max_bin_index(freq_bin_magnitudes, frame_len);
 
 	Assert(expected_bin_index == actual_bin_index, "expected sine %.2f Hz at bin index %d but was %d, bin width %.3f", 
-							sine_freq, expected_bin_index, actual_bin_index, bin_width(frame_len, OVERSAMPLING_RATE));
+							sine_freq, expected_bin_index, actual_bin_index, bin_width(frame_len, SAMPLING_RATE));
 	return true;
 }
 
@@ -74,9 +74,9 @@ static void assert_hps_find_harmonic_peaks(float32_t fundamental_freq, enum fram
 static void test_hps_find_harmonic_peaks(void)
 {
 	/* Reminder bin width will be ~0.9766. */
-	assert_hps_find_harmonic_peaks(97.7, FRAME_LEN_4096, OVERSAMPLING_RATE);
-	assert_hps_find_harmonic_peaks(98, FRAME_LEN_4096, OVERSAMPLING_RATE);
-	assert_hps_find_harmonic_peaks(98.6, FRAME_LEN_4096, OVERSAMPLING_RATE);
+	assert_hps_find_harmonic_peaks(97.7, FRAME_LEN_4096, SAMPLING_RATE);
+	assert_hps_find_harmonic_peaks(98, FRAME_LEN_4096, SAMPLING_RATE);
+	assert_hps_find_harmonic_peaks(98.6, FRAME_LEN_4096, SAMPLING_RATE);
 }
 
 static float32_t note_frequency(const char *note_name)
@@ -101,10 +101,10 @@ static bool assert_hps(const char *note_name, int i, const int16_t *samples, enu
 	if (i == 1)
 		samples_to_freq_bin_magnitudes_init(frame_len);
 	freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
-	harmonic_product_spectrum(freq_bin_magnitudes, frame_len, OVERSAMPLING_RATE);
+	harmonic_product_spectrum(freq_bin_magnitudes, frame_len, SAMPLING_RATE);
 
 	note_freq = note_frequency(note_name);
-	expected_bin_index = freq_to_bin_index(note_freq, bin_width(frame_len, OVERSAMPLING_RATE));
+	expected_bin_index = freq_to_bin_index(note_freq, bin_width(frame_len, SAMPLING_RATE));
 	actual_bin_index = max_bin_index(freq_bin_magnitudes, frame_len);
 
 	Assert(expected_bin_index == actual_bin_index, "expected bin index %d for note %s (%.3f Hz), frame len %d, frame %d, but was %d",

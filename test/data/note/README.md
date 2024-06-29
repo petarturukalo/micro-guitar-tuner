@@ -5,6 +5,6 @@ See comments at `../../../core/note.c:note_freqs` for more info on the
 range of notes being tested.
 
 Each file contains digital audio of a single note on the guitar, 
-the note being named in the filename. File format is 4 frames (frame length
-4096 samples) of raw (headerless), uncompressed, mono, 4000 Hz sample rate, 
-signed 16-bit PCM audio.
+the note being named in the filename. File format is 4 oversized frames 
+(oversize frame length 8192 samples) of raw (headerless), uncompressed, 
+mono, 8000 Hz oversample rate, signed 16-bit PCM audio.

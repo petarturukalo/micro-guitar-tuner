@@ -12,25 +12,31 @@
 
 extern const float32_t filter_coefficients[NR_TAPS];
 
-static arm_fir_instance_f32 fir_instance;
+static arm_fir_decimate_instance_f32 fir_decimate_instance;
 static arm_rfft_fast_instance_f32 fft_instance;
 
 void samples_to_freq_bin_magnitudes_init(enum frame_length frame_len)
 {
-	static float32_t fir_state[NR_TAPS+MAX_FRAME_LEN-1];
-	arm_fir_init_f32(&fir_instance, NR_TAPS, filter_coefficients, fir_state, frame_len);
+	static float32_t fir_state[NR_TAPS+(OVERSAMPLING_FACTOR*MAX_FRAME_LEN)-1];
+	arm_fir_decimate_init_f32(&fir_decimate_instance, NR_TAPS, OVERSAMPLING_FACTOR, filter_coefficients, 
+				  fir_state, OVERSAMPLING_FACTOR*frame_len);
 	arm_rfft_fast_init_f32(&fft_instance, frame_len);
 }
 
-float32_t *samples_to_freq_bin_magnitudes(const float32_t *samples, enum frame_length frame_len)
+float32_t *samples_to_freq_bin_magnitudes(float32_t *samples, enum frame_length frame_len)
 {
-	static float32_t filtered_samples[MAX_FRAME_LEN]; 
-	static float32_t fft_complex_nrs[MAX_FRAME_LEN];
-	static float32_t freq_bin_magnitudes[MAX_NR_BINS];
+	/*
+	 * Each processing step below interleaves between using `buf` and `samples` as input/output
+	 * buffers instead of allocating memory for each, in order to save MCU RAM space.
+	 */
+	static float32_t buf[MAX_FRAME_LEN]; 
+	float32_t *filtered_samples = buf;
+	float32_t *fft_complex_nrs, *freq_bin_magnitudes;
 
-	/* Apply band-pass filter. */
-	arm_fir_f32(&fir_instance, samples, filtered_samples, frame_len);
+	/* Apply band-pass filter and decimate down from the OVERSAMPLING_RATE to SAMPLING_RATE. */
+	arm_fir_decimate_f32(&fir_decimate_instance, samples, filtered_samples, OVERSAMPLING_FACTOR*frame_len);
 	/* Convert from time domain to frequency domain. */
+	fft_complex_nrs = samples;
 	arm_rfft_fast_f32(&fft_instance, filtered_samples, fft_complex_nrs, 0);
 	/* 
 	 * Zero the first complex number because it's the DC offset and value at the Nyquist frequency 
@@ -41,6 +47,7 @@ float32_t *samples_to_freq_bin_magnitudes(const float32_t *samples, enum frame_l
 	 * Get the energy of the spectra. Use regular mag over mag squared because the numbers mag
 	 * squared ouput are too big and cause the result of HPS to overflow and give wrong results. 
 	 */
+	freq_bin_magnitudes = buf;
 	arm_cmplx_mag_f32(fft_complex_nrs, freq_bin_magnitudes, MAX_NR_BINS);
 	return freq_bin_magnitudes;
 }

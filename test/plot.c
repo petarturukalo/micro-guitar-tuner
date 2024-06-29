@@ -18,7 +18,7 @@
 static void plot_magnitudes(FILE *gnuplot, float32_t *freq_bin_magnitudes, enum frame_length frame_len)
 {
 	const int nbins = nr_bins(frame_len);
-	const float32_t binwidth = bin_width(frame_len, OVERSAMPLING_RATE);
+	const float32_t binwidth = bin_width(frame_len, SAMPLING_RATE);
 	/* 
 	 * Boxes (bins) are drawn centred about this x-position, and is the same as the frequency of
 	 * the bin that is being drawn at it.
@@ -89,7 +89,7 @@ static bool plot_note_freq_bin_magnitudes_hps(const char *note_name, int i,
 	if (i == 1)
 		samples_to_freq_bin_magnitudes_init(frame_len);
 	float32_t *freq_bin_magnitudes = samples_to_freq_bin_magnitudes_s16(samples, frame_len);
-	harmonic_product_spectrum(freq_bin_magnitudes, frame_len, OVERSAMPLING_RATE);
+	harmonic_product_spectrum(freq_bin_magnitudes, frame_len, SAMPLING_RATE);
 	return _plot_note_freq_bin_magnitudes(note_name, "-hps", i, freq_bin_magnitudes, frame_len);
 }
 
