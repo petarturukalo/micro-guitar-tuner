@@ -11,7 +11,7 @@
  * Glyph bitmap representation of a character. 
  * Note the actual bitmaps were made in GIMP.
  */
-struct glyph_bitmap {
+static struct glyph_bitmap {
 	char c;
 	uint8_t bitmap[GLYPH_BITMAP_LEN];
 } glyph_bitmaps[] = {
