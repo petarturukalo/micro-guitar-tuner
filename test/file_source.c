@@ -46,7 +46,7 @@ static int file_size(int fd)
  * frame_len*OVERSAMPLING_FACTOR samples, and process_samples called once on each 
  * frame until there aren't enough samples left in the file to fill a whole frame.
  */
-static bool file_source(const char *pathname, enum frame_length frame_len,
+static bool file_source(char *pathname, enum frame_length frame_len,
 			process_samples_fn process_samples)
 {
 	int fd, fsz, sample_size = sizeof(int16_t);
@@ -74,7 +74,7 @@ static bool file_source(const char *pathname, enum frame_length frame_len,
 		return false;
 	}
 	/* Extract name from pathname, excluding .raw extension, e.g. "E2" from "data/E2.raw" */
-	filename = basename((char *)pathname);
+	filename = basename(pathname);
 	*(strrchr(filename, '.')) = '\0';  /* Chop off .raw extension. */
 
 	remaining_samples = fsz/sample_size;
