@@ -38,7 +38,7 @@ note this AITEXM V3.0 board with "whited out" logo is NEEDED over a [V3.1 board 
 because its ADC is less noisy.
 - [Adafruit Electret Mic Amp MAX4466](https://www.adafruit.com/product/1063)
 - [I2C 128x64 SSD1306 OLED display](https://www.dfrobot.com/product-2017.html):
-any 128x64 SSD1306 OLED should work, but I use the DFRobot DFR0650 in particular, so it is preferred. Note by default the display code 
+any I2C 128x64 SSD1306 OLED should work, but I use the DFRobot DFR0650 in particular, so it is preferred. Note by default the display code 
 writes to I2C slave address 0x3C, but this can be changed in code.
 - [3.7V 600 mAh LiPo Battery](https://littlebirdelectronics.com.au/collections/batteries/products/lithium-ion-polymer-battery-3-7v-600mah)
 - [SparkFun LiPo Charger/Booster 5V](https://www.sparkfun.com/products/14411)
