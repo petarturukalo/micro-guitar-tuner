@@ -260,7 +260,7 @@ static void test_sine_wave_anti_alias(void)
 	
 	for_each_file_source(SINE_FILES_DIR "/anti-alias", FRAME_LEN_4096, get_anti_alias_sine_mag);
 	
-	/* Get average max magnitude of all non-aliasing magnitudes. */
+	/* Get average max magnitude of all non-aliasing sines. */
 	sine = anti_alias_sines;
 	for (; sine->frequency <= lowpass_cutoff_freq; ++sine) 
 		average_non_aliased_mag += sine->max_magnitude;
