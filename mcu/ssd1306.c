@@ -186,8 +186,8 @@ void ssd1306_init(void)
 
 
 #define GDDRAM_MCU_BUF_LEN 1024  /* Bytes in 128x64 bits. */
-#define GDDRAM_MCU_BUF_NCOLS 16  /* Bytes in 128 bits. */
-#define GDDRAM_MCU_BUF_NROWS  8  /* Bytes in 64 bits. */
+#define GDDRAM_MCU_BUF_NBYTE_COLS 16  /* Bytes in 128 bits. */
+#define GDDRAM_MCU_BUF_NBYTE_ROWS  8  /* Bytes in 64 bits. */
 
 #define GDDRAM_NPAGES 8
 #define GDDRAM_NROWS_IN_PAGE 8
@@ -209,12 +209,12 @@ static void gddram_mcu_buf_transpose(uint8_t *gddram_mcu_buf, uint8_t *gddram_mc
 	int w = 0;  /* Write index. */
 	
 	for (int i = 0; i < GDDRAM_NPAGES; ++i) {
-		for (int j = 0; j < GDDRAM_MCU_BUF_NCOLS; ++j) {
+		for (int j = 0; j < GDDRAM_MCU_BUF_NBYTE_COLS; ++j) {
 			if (j == 0) {
 				/* Initialise to point to the start byte of each row in the page. */
 				rows[0] = gddram_mcu_buf;
 				for (int k = 1; k < GDDRAM_NROWS_IN_PAGE; ++k)
-					rows[k] = rows[k-1]+GDDRAM_MCU_BUF_NCOLS;
+					rows[k] = rows[k-1]+GDDRAM_MCU_BUF_NBYTE_COLS;
 			}
 			/* 
 			 * Each column of bits in the column byte becomes a transposed byte with
@@ -234,7 +234,7 @@ static void gddram_mcu_buf_transpose(uint8_t *gddram_mcu_buf, uint8_t *gddram_mc
 				rows[k] += 1;
 		}
 		/* Move to start of next page. */
-		gddram_mcu_buf += GDDRAM_MCU_BUF_NCOLS*GDDRAM_NROWS_IN_PAGE;
+		gddram_mcu_buf += GDDRAM_MCU_BUF_NBYTE_COLS*GDDRAM_NROWS_IN_PAGE;
 	}
 }
 
