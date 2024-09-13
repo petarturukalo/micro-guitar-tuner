@@ -36,8 +36,8 @@ void ssd1306_init_i2c(enum ssd1306_i2c_slave_address addr)
 }
 
 /*
- * The non-I2C related payload specific to the SSD1306 is typically an interleaving 
- * of control byte and then data/command byte. 
+ * The SSD1306 I2C payload is typically an interleaving of control byte (this) 
+ * and then data/command byte. 
  */
 struct control_byte {
 	uint8_t unused : 6;  /* This shall be zeroed. */
