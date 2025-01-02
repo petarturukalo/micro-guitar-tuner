@@ -8,9 +8,8 @@
 #include <stdint.h>
 
 /* 
- * Whether to intialise debugging facilities (the UART and counter, used
- * for debugging). Turn this off when not debugging becuase their initialised
- * clocks waste power.
+ * Whether to intialise debugging facilities (the UART and counter). 
+ * Turn this off when not debugging becuase their initialised clocks waste power.
  */
 #define ENABLE_DEBUG 0
 

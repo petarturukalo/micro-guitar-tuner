@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 /* 
- * The glyph bitmap for a font is 29x32 pixels but padded to 32 bits
+ * A glyph bitmap for the font is 29x32 pixels but padded to 32 bits
  * wide to make the width a multiple of a byte so that a pixel can be
  * represented by a single bit rather than a byte, in order to save space.
  */
