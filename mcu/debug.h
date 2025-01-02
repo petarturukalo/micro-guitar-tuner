@@ -9,7 +9,7 @@
 
 /* 
  * Whether to intialise debugging facilities (the UART and counter). 
- * Turn this off when not debugging becuase their initialised clocks waste power.
+ * Turn this off when not debugging because their initialised clocks waste power.
  */
 #define ENABLE_DEBUG 0
 
