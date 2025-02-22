@@ -10,7 +10,7 @@
 
 #define XTICS_INCR 100
 
-/* 
+/**
  * Plot magnitudes, drawing a box of width bin_width() for each. 
  * Metadata keyentries are also drawn to the key/legend here because it can only
  * be done with the plot command.
@@ -41,8 +41,8 @@ static void plot_magnitudes(FILE *gnuplot, float32_t *freq_bin_magnitudes, enum 
 	fprintf(gnuplot, "e\n");
 }
 
-/*
- * Save a plot of the frequency bin magnitudes of a note to file 'plot/<note_name><name_suffix>-<i>.svg'.
+/**
+ * @brief Save a plot of the frequency bin magnitudes of a note to file 'plot/<note_name><name_suffix>-<i>.svg'.
  */
 static bool _plot_note_freq_bin_magnitudes(const char *note_name, char *name_suffix, int i, 
 					   float32_t *freq_bin_magnitudes, enum frame_length frame_len) 

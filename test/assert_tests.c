@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-/* Assert the frequency of a sine wave falls into the expected bin. */
+/** @brief Assert the frequency of a sine wave falls into the expected bin. */
 static bool assert_sine_wave_freq_to_bin_index(const char *sine_freq_str, int i, const int16_t *samples, enum frame_length frame_len)
 {
 	float32_t sine_freq;
@@ -33,9 +33,9 @@ static bool assert_sine_wave_freq_to_bin_index(const char *sine_freq_str, int i,
 	return true;
 }
 
-/*
- * Generate peaks in the empty magnitudes array at the first NHARMONICS harmonics of the fundamental
- * frequency. Return the expected magnitude value of the fundamental frequency / maximum peak after HPS.
+/**
+ * @brief Generate peaks in the empty magnitudes array at the first NHARMONICS harmonics of the fundamental frequency. 
+ * @return The expected magnitude value of the fundamental frequency / maximum peak after HPS.
  */
 static float32_t generate_harmonic_peaks(float32_t fundamental_freq, float32_t *mags, float32_t binwidth)
 {
@@ -50,7 +50,7 @@ static float32_t generate_harmonic_peaks(float32_t fundamental_freq, float32_t *
 	return pow(harmonic_peak_mag, NHARMONICS);
 }
 
-/* Assert the implementation of harmonic_product_spectrum() finds the peak value of harmonics as intended. */
+/** @brief Assert the implementation of harmonic_product_spectrum() finds the peak value of harmonics as intended. */
 static void assert_hps_find_harmonic_peaks(float32_t fundamental_freq, enum frame_length frame_len, int sampling_rate)
 {
 	float32_t mags[MAX_NR_BINS] = { 0 };
@@ -91,7 +91,7 @@ static float32_t note_frequency(const char *note_name)
 	return 0;
 }
 
-/* Assert harmonic product spectrum turns the fundamental frequency into the maximum peak. */
+/** @brief Assert harmonic product spectrum turns the fundamental frequency into the maximum peak. */
 static bool assert_hps(const char *note_name, int i, const int16_t *samples, enum frame_length frame_len)
 {
 	float32_t *freq_bin_magnitudes;
@@ -112,8 +112,8 @@ static bool assert_hps(const char *note_name, int i, const int16_t *samples, enu
 	return true;
 }
 
-/* 
- * Assert each pair of adjacent notes in note_freqs is CENTS_IN_SEMITONE cents apart from each other. 
+/**
+ * @brief Assert each pair of adjacent notes in note_freqs is CENTS_IN_SEMITONE cents apart from each other. 
  */
 static void test_cents_difference(void)
 {
@@ -229,7 +229,7 @@ static struct anti_alias_sine *anti_alias_sine_lookup_by_freq(float32_t frequenc
 	return NULL;
 }
 
-/* Populate the `max_magnitude` field of the sine in `anti_alias_sines` with matching frequency. */
+/** @brief Populate the `max_magnitude` field of the sine in `anti_alias_sines` with matching frequency. */
 static bool get_anti_alias_sine_mag(const char *sine_freq_str, int i, const int16_t *samples, enum frame_length frame_len)
 {
 	float32_t sine_freq;
@@ -250,7 +250,7 @@ static bool get_anti_alias_sine_mag(const char *sine_freq_str, int i, const int1
 	return true;
 }
 
-/* Assert sine waves with frequency above the low-pass filter cutoff frequency do not alias. */
+/** @brief Assert sine waves with frequency above the low-pass filter cutoff frequency do not alias. */
 static void test_sine_wave_anti_alias(void)
 {
 	struct anti_alias_sine *sine;

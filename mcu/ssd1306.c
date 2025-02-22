@@ -35,7 +35,7 @@ void ssd1306_init_i2c(enum ssd1306_i2c_slave_address addr)
 	ssd1306_addr = addr;
 }
 
-/*
+/**
  * The SSD1306 I2C payload is typically an interleaving of control byte (this) 
  * and then data/command byte. 
  */
@@ -51,8 +51,8 @@ struct control_byte {
 	} continuation : 1;
 } __attribute__((packed));
 
-/*
- * Issue a command byte to the SSD1306 controller. 
+/**
+ * @brief Issue a command byte to the SSD1306 controller. 
  */
 static void _ssd1306_send_cmd(uint8_t cmd)
 {
@@ -79,7 +79,7 @@ enum ssd1306_cmd {
 	SSD1306_CMD_SET_DISPLAY_CLOCK           = 0xD5
 };
 
-/*
+/**
  * Issue a command to the SSD1306 controller. A command can optionally have arguments,
  * either encoded in unused bits of the command identifier itself (id_encoded_args), or 
  * encoded in their own command bytes sent after the initial command identifying byte (extra_args).
@@ -115,13 +115,13 @@ static void ssd1306_reverse_segments(void)
 	ssd1306_send_cmd(SSD1306_CMD_REVERSE_SEGMENTS, 0, NULL, 0);
 }
 
-/* Contrast increases as the contrast param increases. */
+/** @note Contrast increases as the contrast param increases. */
 static void ssd1306_set_contrast(uint8_t contrast)
 {
 	ssd1306_send_cmd(SSD1306_CMD_SET_CONTRAST, 0, &contrast, 1);
 }
 
-/* 
+/**
  * Set display clock divider and oscillator (clock source) frequency. 
  * Both params are 4-bit numbers, not 8-bit.
  */
@@ -138,7 +138,7 @@ static void ssd1306_set_display_clock(uint8_t clock_divider, uint8_t osc_freq)
 	ssd1306_send_cmd(SSD1306_CMD_SET_DISPLAY_CLOCK, 0, (uint8_t *)&args, 1);
 }
 
-/* False param means disable. */
+/** @param enable False means disable. */
 static void ssd1306_enable_charge_pump(bool enable)
 {
 	struct {
@@ -156,7 +156,7 @@ static void ssd1306_enable_charge_pump(bool enable)
 	ssd1306_send_cmd(SSD1306_CMD_CHARGE_PUMP_SETTING, 0, (uint8_t *)&arg, 1);
 }
 
-/* False param means off. */
+/** @param on False means off. */
 static void ssd1306_set_display_on(bool on)
 {
 	ssd1306_send_cmd(SSD1306_CMD_SET_DISPLAY_ON_OFF, on, NULL, 0);
@@ -185,16 +185,16 @@ void ssd1306_init(void)
 }
 
 
-#define GDDRAM_MCU_BUF_LEN 1024  /* Bytes in 128x64 bits. */
-#define GDDRAM_MCU_BUF_NBYTE_COLS 16  /* Bytes in 128 bits. */
-#define GDDRAM_MCU_BUF_NBYTE_ROWS  8  /* Bytes in 64 bits. */
+#define GDDRAM_MCU_BUF_LEN 1024  /**< Bytes in 128x64 bits. */
+#define GDDRAM_MCU_BUF_NBYTE_COLS 16  /**< Bytes in 128 bits. */
+#define GDDRAM_MCU_BUF_NBYTE_ROWS  8  /**< Bytes in 64 bits. */
 
 #define GDDRAM_NPAGES 8
 #define GDDRAM_NROWS_IN_PAGE 8
 
 static uint8_t gddram_mcu_buf[GDDRAM_MCU_BUF_LEN];
 
-/*
+/**
  * Transpose the gddram_mcu_buf 2D bit array into a data stream gddram_mcu_buf_transposed that
  * when sent to the SSD1306 GDDRAM configured for horizontal addressing mode will show up on 
  * the display as the original 2D bit array.

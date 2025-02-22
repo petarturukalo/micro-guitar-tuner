@@ -29,7 +29,7 @@ static bool str_has_suffix(const char *str, const char *suffix)
 	return true;
 }
 
-/* Get the size of a file in bytes, or -1 on error. */
+/** @brief Get the size of a file in bytes, or -1 on error. */
 static int file_size(int fd)
 {
 	struct stat stat;
@@ -39,8 +39,9 @@ static int file_size(int fd)
 	return stat.st_size;
 }
 
-/*
- * Run a function on a stream of samples sourced from a file. 
+/**
+ * @brief Run a function on a stream of samples sourced from a file. 
+ *
  * See data/{note,sine}/README.md for an explanation of the format of a file source.
  * The samples in the file are split into oversized frames of length 
  * frame_len*OVERSAMPLING_FACTOR samples, and process_samples called once on each 

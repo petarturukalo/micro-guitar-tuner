@@ -7,9 +7,9 @@
 
 #define GLYPH_BITMAP_LEN 128
 
-/* 
- * Glyph bitmap representation of a character. 
- * Note the actual bitmaps were made in GIMP.
+/**
+ * @brief Glyph bitmap representation of a character. 
+ * @note The actual bitmaps were made in GIMP.
  */
 static struct glyph_bitmap {
 	char c;

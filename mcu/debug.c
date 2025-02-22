@@ -29,7 +29,7 @@ void uart_init(void)
 #endif
 }
 
-/*
+/**
  * Write buffers destined for stdout to the UART initialised in uart_init(). 
  * This will forward the output of calls to printf() over the UART.
  */

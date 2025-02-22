@@ -9,8 +9,8 @@ uint8_t bit_index_to_8bit_bitmask(int bit_index)
 	return 1<<(BITS_IN_BYTE-bit_index-1);
 }
 
-/*
- * Get a pointer to the byte that the bit at row i, column j resides in, within the 2D bit array.
+/**
+ * @brief Get a pointer to the byte that the bit at row i, column j resides in, within the 2D bit array.
  */
 static uint8_t *bit_array_2d_get_byte(uint8_t *bit_array, int ncols, int i, int j)
 {
@@ -19,16 +19,16 @@ static uint8_t *bit_array_2d_get_byte(uint8_t *bit_array, int ncols, int i, int 
 	return bit_array+(nbyte_cols*i)+column_byte_index;
 }
 
-/*
- * Get an 8-bit bitmask of the byte the bit at column j resides in, but with only the column j bit high.
+/**
+ * @brief Get an 8-bit bitmask of the byte the bit at column j resides in, but with only the column j bit high.
  */
 static uint8_t bit_array_2d_get_col_8bit_bitmask(int j)
 {
 	return bit_index_to_8bit_bitmask(j%BITS_IN_BYTE);
 }
 
-/*
- * Get the bit at row i, column j of the 2D bit array.
+/**
+ * @brief Get the bit at row i, column j of the 2D bit array.
  */
 static bool bit_array_2d_get(uint8_t *bit_array, int ncols, int nrows, int i, int j)
 {

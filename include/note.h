@@ -12,12 +12,12 @@ struct note_freq {
 	float32_t frequency;
 };
 
-/* Table of notes and their frequencies to 3 decimal places. */
+/** Table of notes and their frequencies to 3 decimal places. */
 extern struct note_freq note_freqs[];
 extern struct note_freq null_nf;
 
-/*
- * Get the frequency of the lowest note C0.
+/**
+ * @brief Get the frequency of the lowest note C0.
  */
 float32_t lowest_note_frequency(void);
 
@@ -25,7 +25,7 @@ float32_t lowest_note_frequency(void);
 #define CENTS_IN_SEMITONE 100
 #define CENTS_IN_HALF_SEMITONE (CENTS_IN_SEMITONE/2)
 
-/*
+/**
  * Get in cents how close a frequency is to a reference note frequency.
  * A positive return means the frequency is higher than the reference, and 
  * a negative return means it's lower.
@@ -46,7 +46,7 @@ float32_t lowest_note_frequency(void);
  */
 int cents_difference(float32_t frequency, struct note_freq *reference);
 
-/* 
+/**
  * Get the note closest to the input frequency. The returned note will be at most 
  * CENTS_IN_HALF_SEMITONE cents away from the frequency. Return NULL if the frequency 
  * is not in the covered frequency range.

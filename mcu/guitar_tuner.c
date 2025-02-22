@@ -21,15 +21,15 @@
 /* The ADC regular data register data field is 16 bits wide, but the sample is 12 bits. */
 #define ADC_DR_DATA_MASK 0x00000fff
 
-/*
+/**
  * This is a circular buffer storing 2 oversized frames worth of samples so that one frame can
  * be filled while the other full frame is being processed.
  */
 static volatile float32_t samples[OVER_FRAME_LEN*2];
 static volatile float32_t *volatile full_samples_frame = NULL;
 
-/*
- * Store the converted sample in the next free slot in the samples circular buffer. 
+/**
+ * @brief Store the converted sample in the next free slot in the samples circular buffer. 
  *
  * When a frame has been filled full_samples_frame is set to the first sample in the
  * filled frame, signalling that the frame is ready for processing (see processing_start()).
@@ -48,7 +48,7 @@ void adc_isr(void)
 	}
 }
 
-/* Set timer 2 (TIM2) sampling rate to OVERSAMPLING_RATE. */
+/** @brief Set timer 2 (TIM2) sampling rate to OVERSAMPLING_RATE. */
 static void timer2_set_sampling_rate(void)
 {
 	/*
@@ -70,8 +70,8 @@ static void timer2_set_sampling_rate(void)
 	timer_clear_flag(TIM2, TIM_EGR_UG);
 }
 
-/*
- * Configure timer 2 (TIM2) to send an update event as trigger output (TRGO) at a sampling rate of OVERSAMPLING_RATE.
+/**
+ * @brief Configure timer 2 (TIM2) to send an update event as trigger output (TRGO) at a sampling rate of OVERSAMPLING_RATE.
  */
 static void timer_init(void)
 {
@@ -88,7 +88,7 @@ static void timer_init(void)
 	timer2_set_sampling_rate();
 }
 
-/*
+/**
  * Initialise the ADC (ADC1) to do a single conversion on regular channel 1 (pin PA1) when externally
  * triggered by the timer 2 (TIM2) trigger output (TRGO). End of conversion interrupt is enabled
  * and handled by adc_isr(). 
@@ -113,9 +113,9 @@ static void adc_init(void)
 	adc_power_on(ADC1);
 }
 
-/*
- * Initialise the sampler to sample at an OVERSAMPLING_RATE sampling rate.
- * Call sampler_start() to start sampling.
+/**
+ * @brief Initialise the sampler to sample at an OVERSAMPLING_RATE sampling rate.
+ *        Call sampler_start() to start sampling.
  *
  * Hardware timing is used to achieve the sampling rate, with a timer driving 
  * the ADC rather than setting up the ADC in continuous mode because its choice of
@@ -129,16 +129,16 @@ static void sampler_init(void)
 	adc_init();
 }
 
-/* 
- * Start the sampler initialised in sampler_init(), which will start the triggering
- * of ADC interrupts and servicing of them with adc_isr().
+/**
+ * @brief Start the sampler initialised in sampler_init(), which will start the triggering
+ *        of ADC interrupts and servicing of them with adc_isr().
  */
 static void sampler_start(void)
 {
 	timer_enable_counter(TIM2);
 }
 
-/*
+/**
  * Display the closest note (or a question mark for no such closest note) and a slider depicting 
  * how close the detected frequency is to the closest note. On the slider are two tics, one smaller 
  * in the centre to mark the point on the slider that is exactly in tune with the closest note, 
@@ -208,7 +208,7 @@ static void processing_init(void)
 	display_question_mark();
 }
 
-/*
+/**
  * Continuously wait for a frame of samples to be filled, then processing the full frame for
  * a detected closest note and showing it on the display. Because after decimation the sampling rate 
  * (SAMPLING_RATE) is 4000 and the frame length (FRAME_LEN) is 4096, it will take 4096/4000 = 1.024 
