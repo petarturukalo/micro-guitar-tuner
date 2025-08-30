@@ -151,8 +151,8 @@ static void sampler_start(void)
  *           |  
  *        ---|---|-------
  *           |
- *	         ^ smaller tic
- *	     ^ larger tic
+ *               ^ smaller tic
+ *           ^ larger tic
  *
  * Note the larger tic can overlap the smaller tic.
  */
