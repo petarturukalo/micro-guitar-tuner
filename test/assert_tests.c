@@ -182,7 +182,7 @@ static void test_bit_array_2d_copy(void)
                 (struct write_coord){ 0, 0 },
                 (uint8_t[]){ 0b10101010,0b01010101,0b11111111,
                              0b00001111,0b00000000,0b11110000 }
-        );
+	);
 
 	assert_bit_array_2d_copy(
                 (uint8_t[]){ 0b11100000,0b00000000,0b00000000,
@@ -194,7 +194,7 @@ static void test_bit_array_2d_copy(void)
                 (uint8_t[]){ 0b11100000,0b00000000,0b00000000,
                              0b11100000,0b00000001,0b10000000,
                              0b11100000,0b00000001,0b10000000 }
-        );
+	);
 }
 
 
